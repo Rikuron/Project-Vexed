@@ -14,7 +14,7 @@ export const analyzeProblem = createServerFn({ method: 'POST' })
     if (!OPENROUTER_API_KEY) throw new Error('OPENROUTER_API_KEY is not configured on the server.')
 
     try {
-      const response = await fetch('https://  openrouter.ai/api/v1/chat/completions', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
