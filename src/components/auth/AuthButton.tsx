@@ -5,21 +5,33 @@ export default function AuthButton() {
 
   if (loading) {
     return (
-      <div className="h-10 w-24 animate-pulse rounded-lg bg-slate-700">
-        <img 
-          src={user?.photoURL ?? ''}
-          alt={user?.displayName ?? 'User'}
-          className="h-8 w-8 rounded-full"
-          referrerPolicy="no-referrer"
-        />
+      <div className="h-9 w-20 animate-pulse rounded-lg bg-slate-700" />
+    )
+  }
+
+  if (user) {
+    return (
+      <div className="flex items-center gap-3">
+        {user.photoURL ? (
+          <img
+            src={user.photoURL}
+            alt={user.displayName ?? 'User'}
+            className="h-8 w-8 rounded-full"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white">
+            {user.displayName?.charAt(0) ?? '?'}
+          </div>
+        )}
         <span className="hidden text-sm text-gray-300 sm:inline">
-          {user?.displayName}
+          {user.displayName}
         </span>
         <button
           onClick={signOut}
           className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:border-red-500/50 hover:text-red-400"
         >
-          Sing Out
+          Sign Out
         </button>
       </div>
     )
@@ -28,7 +40,7 @@ export default function AuthButton() {
   return (
     <button
       onClick={signInWithGoogle}
-      className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100"
+      className="flex items-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:border-indigo-500/50 hover:text-white"
     >
       <svg className="h-4 w-4" viewBox="0 0 24 24">
         <path
@@ -48,7 +60,7 @@ export default function AuthButton() {
           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
         />
       </svg>
-      Sign in with Google
+      Sign In
     </button>
   )
 }

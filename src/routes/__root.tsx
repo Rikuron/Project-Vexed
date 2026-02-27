@@ -18,7 +18,12 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Vexed — Turn frustrations into missions',
+      },
+      {
+        name: 'description',
+        content:
+          'Submit real-world problems and let developers build solutions. A problem-first platform connecting frustrations with builders.',
       },
     ],
     links: [
@@ -26,8 +31,17 @@ export const Route = createRootRoute({
         rel: 'stylesheet',
         href: appCss,
       },
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
+      },
     ],
   }),
+
   shellComponent: RootDocument,
 })
 

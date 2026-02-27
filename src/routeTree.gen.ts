@@ -10,13 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as MyVexationsRouteImport } from './routes/my-vexations'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VexationIdRouteImport } from './routes/vexation/$id'
+import { Route as MySavedRouteImport } from './routes/my/saved'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyVexationsRoute = MyVexationsRouteImport.update({
+  id: '/my-vexations',
+  path: '/my-vexations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrowseRoute = BrowseRouteImport.update({
@@ -34,38 +41,70 @@ const VexationIdRoute = VexationIdRouteImport.update({
   path: '/vexation/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MySavedRoute = MySavedRouteImport.update({
+  id: '/my/saved',
+  path: '/my/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/my-vexations': typeof MyVexationsRoute
   '/submit': typeof SubmitRoute
+  '/my/saved': typeof MySavedRoute
   '/vexation/$id': typeof VexationIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/my-vexations': typeof MyVexationsRoute
   '/submit': typeof SubmitRoute
+  '/my/saved': typeof MySavedRoute
   '/vexation/$id': typeof VexationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/my-vexations': typeof MyVexationsRoute
   '/submit': typeof SubmitRoute
+  '/my/saved': typeof MySavedRoute
   '/vexation/$id': typeof VexationIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse' | '/submit' | '/vexation/$id'
+  fullPaths:
+    | '/'
+    | '/browse'
+    | '/my-vexations'
+    | '/submit'
+    | '/my/saved'
+    | '/vexation/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/submit' | '/vexation/$id'
-  id: '__root__' | '/' | '/browse' | '/submit' | '/vexation/$id'
+  to:
+    | '/'
+    | '/browse'
+    | '/my-vexations'
+    | '/submit'
+    | '/my/saved'
+    | '/vexation/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/browse'
+    | '/my-vexations'
+    | '/submit'
+    | '/my/saved'
+    | '/vexation/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
+  MyVexationsRoute: typeof MyVexationsRoute
   SubmitRoute: typeof SubmitRoute
+  MySavedRoute: typeof MySavedRoute
   VexationIdRoute: typeof VexationIdRoute
 }
 
@@ -76,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/submit'
       preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-vexations': {
+      id: '/my-vexations'
+      path: '/my-vexations'
+      fullPath: '/my-vexations'
+      preLoaderRoute: typeof MyVexationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/browse': {
@@ -99,13 +145,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VexationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my/saved': {
+      id: '/my/saved'
+      path: '/my/saved'
+      fullPath: '/my/saved'
+      preLoaderRoute: typeof MySavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
+  MyVexationsRoute: MyVexationsRoute,
   SubmitRoute: SubmitRoute,
+  MySavedRoute: MySavedRoute,
   VexationIdRoute: VexationIdRoute,
 }
 export const routeTree = rootRouteImport
