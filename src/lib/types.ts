@@ -2,15 +2,15 @@ import type { Timestamp } from "firebase/firestore"
 
 // Sector Categories
 export const SECTORS = [
-  'health', 'finance', 'logistics', 'productivity',
-  'education', 'environment', 'social', 'technology', 'ai/ml', 'other'
+  'Health', 'Finance', 'Logistics', 'Productivity',
+  'Education', 'Environment', 'Social', 'Technology', 'AI/ML', 'Other'
 ] as const
 
 export type Sector = typeof SECTORS[number]
 
-export type Severity = 'low' | 'medium' | 'high' | 'critical'
-export type Complexity = 'beginner' | 'intermediate' | 'advanced'
-export type VexationStatus = 'pending' | 'analyzed' | 'claimed' | 'solved' | 'closed'
+export type Severity = 'Low' | 'Medium' | 'High' | 'Critical'
+export type Complexity = 'Beginner' | 'Intermediate' | 'Advanced'
+export type VexationStatus = 'Pending' | 'Analyzed' | 'Claimed' | 'Solved' | 'Closed'
 
 // AI Analysis (returned by the server function)
 export interface AIAnalysis {

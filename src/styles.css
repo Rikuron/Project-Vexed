@@ -1,5 +1,28 @@
 @import "tailwindcss";
 
+@theme {
+  --color-vexed-primary: #1a2cfe;
+  --color-vexed-secondary: #161cd1;
+  --color-vexed-highlight1: #3713ec;
+  --color-vexed-highlight2: #818cf8;
+  --color-vexed-highlight3: #6366f1;
+  --color-vexed-accent1: #100d2b;
+  --color-vexed-accent2: #2a2d3d;
+  --color-vexed-accent3: #1d174a;
+  --color-vexed-bg1: #161822;
+  --color-vexed-bg2: #0b0c15;
+  --color-vexed-bg3: #0f172a;
+  --color-vexed-dim: #949ba6;
+
+  /* Loading Screen Orbit Animation */
+  --animate-orbit: orbit 1.2s linear infinite;
+
+  @keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+}
+
 body {
   @apply m-0;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
