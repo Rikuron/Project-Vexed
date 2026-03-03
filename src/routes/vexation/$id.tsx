@@ -130,9 +130,9 @@ function VexationDetailPage() {
 
   // ── Complexity score visual (map to number for the visual) ──
   const complexityScore =
-    vexation.technicalComplexity === 'advanced'
+    vexation.technicalComplexity === 'Advanced'
       ? 8.5
-      : vexation.technicalComplexity === 'intermediate'
+      : vexation.technicalComplexity === 'Intermediate'
         ? 5.5
         : 3.0
 
