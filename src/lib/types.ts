@@ -14,6 +14,8 @@ export type VexationStatus = 'Pending' | 'Analyzed' | 'Claimed' | 'Solved' | 'Cl
 
 // AI Analysis (returned by the server function)
 export interface AIAnalysis {
+  isViolatingPolicies: boolean
+  violationReason?: string
   sector: Sector
   category: string
   tags: string[]

@@ -25,8 +25,13 @@ export const analyzeProblem = createServerFn({ method: 'POST' })
           messages: [
             {
               role: 'system',
-              content: `You are a problem categorization AI for a platform called Vexed, where people submit real-world frustrations ("vexations") and developers pick them up as project ideas.
-Analyze the user-submitted problem and return a JSON object with these exact fields:
+              content: `You are a problem categorization AI and strict Content Moderator for a platform called Vexed, where people submit real-world frustrations ("vexations") and developers pick them up as project ideas.
+First, rigorously analyze the input for policy violations. If the input is in bad taste, criminal in nature, encourages discrimination/harm, contains hate speech, or violates standard terms of service/rights, you MUST set "isViolatingPolicies" to true and provide a "violationReason" explaining why.
+If it is safe, set "isViolatingPolicies" to false and leave "violationReason" empty or null.
+
+Analyze the safe problem and return a JSON object with these exact fields:
+- "isViolatingPolicies": boolean
+- "violationReason": string | null
 - "sector": one of ["Health", "Finance", "Logistics", "Productivity", "Agriculture", "Education", "Environment", "Social", "Technology", "AI/ML", "Other"]
 - "category": a specific sub-category within the sector (e.g. "payment processing", "patient triage")
 - "tags": array of 3-5 relevant technical/domain tags
@@ -57,6 +62,9 @@ Only respond with valid JSON. No markdown, no explanation, just the JSON object.
       if (!content) throw new Error('OpenRouter returned an empty response.')
 
       const parsed: AIAnalysis = JSON.parse(content)
+
+      if (parsed.isViolatingPolicies) throw new Error(`Submission rejected: ${parsed.violationReason || 'This content violates platform policies.'}`)
+      
       return parsed
     } catch (error) {
       if (error instanceof SyntaxError) throw new Error('AI returned invalid JSON. Please try submitting again.')
