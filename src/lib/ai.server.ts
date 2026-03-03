@@ -27,12 +27,12 @@ export const analyzeProblem = createServerFn({ method: 'POST' })
               role: 'system',
               content: `You are a problem categorization AI for a platform called Vexed, where people submit real-world frustrations ("vexations") and developers pick them up as project ideas.
 Analyze the user-submitted problem and return a JSON object with these exact fields:
-- "sector": one of ["health", "finance", "logistics", "productivity", "education", "environment", "social", "technology", "ai/ml", "other"]
+- "sector": one of ["Health", "Finance", "Logistics", "Productivity", "Agriculture", "Education", "Environment", "Social", "Technology", "AI/ML", "Other"]
 - "category": a specific sub-category within the sector (e.g. "payment processing", "patient triage")
 - "tags": array of 3-5 relevant technical/domain tags
-- "severity": "low" | "medium" | "high" | "critical"
+- "severity": "Low" | "Medium" | "High" | "Critical"
 - "summary": a concise 1-2 sentence summary written for a developer audience
-- "technicalComplexity": "beginner" | "intermediate" | "advanced"
+- "technicalComplexity": "Beginner" | "Intermediate" | "Advanced"
 - "keyChallenges": array of 2-4 key technical challenges a developer would face solving this
 - "suggestedTechStack": array of 2-4 technologies/tools that could help solve this problem
 Only respond with valid JSON. No markdown, no explanation, just the JSON object.`,

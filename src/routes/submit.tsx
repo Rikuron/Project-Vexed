@@ -7,6 +7,7 @@ import type { AIAnalysis } from '../lib/types'
 
 import SubmitForm from '../components/forms/SubmitForm'
 import SubmitSuccess from '../components/forms/SubmitSuccess'
+import SubmitVerifyModal from '../components/forms/SubmitVerifyModal'
 
 export const Route = createFileRoute('/submit')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -15,7 +16,7 @@ export const Route = createFileRoute('/submit')({
   component: SubmitPage,
 })
 
-type SubmitState = 'idle' | 'analyzing' | 'saving' | 'success' | 'error'
+type SubmitState = 'idle' | 'analyzing' | 'verifying' | 'saving' | 'success' | 'error'
 
 function SubmitPage() {
   const { prefill } = Route.useSearch()
@@ -44,14 +45,36 @@ function SubmitPage() {
       })
       setAiResult(analysis)
 
-      // Step 2: Save to Firestore
+      // Step 2: Verify information
+      setState('verifying')
+
+    } catch (err) {
+      setState('error')
+      setErrorMsg(
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+      )
+    }
+  }
+
+  async function handleConfirm(updatedData: { 
+    title: string; 
+    description: string; 
+    aiResult: AIAnalysis 
+  }) {
+    try {
+      // Step 3: Save to Firestore Database
       setState('saving')
+
       const docId = await createVexation(
-        { title: title.trim(), description: description.trim() },
-        analysis,
+        { title: updatedData.title.trim(), description: updatedData.description.trim() },
+        updatedData.aiResult,
         user?.uid,
         user?.displayName ?? undefined,
       )
+
+      setTitle(updatedData.title)
+      setDescription(updatedData.description)
+      setAiResult(updatedData.aiResult)
       setCreatedId(docId)
 
       setState('success')
@@ -83,16 +106,29 @@ function SubmitPage() {
   }
 
   return (
-    <SubmitForm
-      user={user}
-      title={title}
-      setTitle={setTitle}
-      description={description}
-      setDescription={setDescription}
-      state={state}
-      errorMsg={errorMsg}
-      onSubmit={handleSubmit}
-      canSubmit={canSubmit}
-    />
+    <>
+      {(state === 'verifying' || state === 'saving') && aiResult && (
+        <SubmitVerifyModal
+          initialTitle={title}
+          initialDescription={description}
+          initialAiResult={aiResult}
+          isSaving={state === 'saving'}
+          onCancel={() => setState('idle')}
+          onConfirm={handleConfirm}
+        />
+      )}
+
+      <SubmitForm
+        user={user}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+        state={state}
+        errorMsg={errorMsg}
+        onSubmit={handleSubmit}
+        canSubmit={canSubmit}
+      />
+    </>
   )
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Sparkles, Search } from 'lucide-react'
+import { Sparkles, Plus } from 'lucide-react'
 import { getVexations } from '../lib/firestore'
 import { DUMMY_VEXATIONS } from '../lib/dummyData'
 import type { Vexation } from '../lib/types'
@@ -74,7 +74,7 @@ function LandingPage() {
 
           {/* Inner container (masks the gradient, leaving only the border visible) */}
           <div className="relative rounded-xl bg-slate-800/90">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            <Plus size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
             <input
               type="text"
               placeholder="Describe an issue, friction, or pain point..."

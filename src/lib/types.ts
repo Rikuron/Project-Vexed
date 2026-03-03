@@ -2,7 +2,7 @@ import type { Timestamp } from "firebase/firestore"
 
 // Sector Categories
 export const SECTORS = [
-  'Health', 'Finance', 'Logistics', 'Productivity',
+  'Health', 'Finance', 'Logistics', 'Productivity', 'Agriculture', 
   'Education', 'Environment', 'Social', 'Technology', 'AI/ML', 'Other'
 ] as const
 

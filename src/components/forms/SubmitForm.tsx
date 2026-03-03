@@ -1,7 +1,7 @@
 import { Send, Loader2, AlertCircle, Sparkles } from 'lucide-react'
 import type { User } from 'firebase/auth'
 
-type SubmitState = 'idle' | 'analyzing' | 'saving' | 'success' | 'error'
+type SubmitState = 'idle' | 'analyzing' | 'verifying' | 'saving' | 'success' | 'error'
 
 interface SubmitFormProps {
   user: User | null
