@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Sparkles, Plus } from 'lucide-react'
-import { getVexations } from '../lib/firestore'
+import { getVexations } from '../lib/db'
 import { DUMMY_VEXATIONS } from '../lib/dummyData'
-import type { Vexation } from '../lib/types'
+import type { Vexation } from '../types'
 import AuthButton from '../components/auth/AuthButton'
 import RecentVexationCard from '../components/cards/RecentVexationCard'
 

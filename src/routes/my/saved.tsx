@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Loader2, Bookmark, ThumbsUp, Eye } from 'lucide-react'
-import { getSavedVexations } from '../../lib/firestore'
-import { useAuth } from '../../lib/auth'
-import type { Vexation } from '../../lib/types'
+import { getSavedVexations } from '../../lib/db'
+import { useAuth } from '../../lib/auth/AuthContext'
+import type { Vexation } from '../../types'
 
 export const Route = createFileRoute('/my/saved')({
   component: SavedPage,

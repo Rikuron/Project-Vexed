@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Check, Loader2 } from 'lucide-react'
-import type { AIAnalysis, Sector, Severity, Complexity } from '../../lib/types'
-import { SECTORS } from '../../lib/types'
+import type { AIAnalysis, Sector, Severity, Complexity } from '../../types'
+import { SECTORS } from '../../types'
 
 interface SubmitVerifyModalProps {
   initialTitle: string

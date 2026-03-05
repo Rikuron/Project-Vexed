@@ -15,8 +15,8 @@ import {
   arrayRemove,
   serverTimestamp
 } from 'firebase/firestore'
-import { db } from './firebase'
-import type { Vexation, AIAnalysis, VexationFilters } from './types'
+import { db } from '../firebase'
+import type { Vexation, AIAnalysis, VexationFilters } from '../../types'
 
 // Collection References
 const vexationsRef = collection(db, 'vexations')
@@ -49,7 +49,7 @@ export async function createVexation(
     viewCount: 0,
     commentCount: 0,
     savedBy: [],
-    status: 'analyzed',
+    status: 'Analyzed', // Fixing lowercase 'analyzed' to match VexationStatus type
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })

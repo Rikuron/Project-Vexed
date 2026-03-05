@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
 import { Search, ThumbsUp, Eye, Loader2, LayoutGrid, List } from 'lucide-react'
-import { getVexations } from '../lib/firestore'
-import type { Vexation, Sector, Complexity, VexationFilters } from '../lib/types'
-import { SECTORS } from '../lib/types'
+import { getVexations } from '../lib/db'
+import type { Vexation, Sector, Complexity, VexationFilters } from '../types'
+import { SECTORS } from '../types'
 
 export const Route = createFileRoute('/browse')({ component: BrowsePage })
 
@@ -213,11 +213,11 @@ function VexationCard({
 
   // Severity percentage for the visual bar
   const severityPercent =
-    vex.severity === 'critical'
+    vex.severity === 'Critical'
       ? 98
-      : vex.severity === 'high'
+      : vex.severity === 'High'
         ? 75
-        : vex.severity === 'medium'
+        : vex.severity === 'Medium'
           ? 50
           : 25
 

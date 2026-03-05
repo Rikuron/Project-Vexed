@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { analyzeProblem } from '../lib/ai.server'
-import { createVexation } from '../lib/firestore'
-import { useAuth } from '../lib/auth'
-import type { AIAnalysis } from '../lib/types'
+import { createVexation } from '../lib/db'
+import { useAuth } from '../lib/auth/AuthContext'
+import type { AIAnalysis } from '../types'
 
 import SubmitForm from '../components/forms/SubmitForm'
 import SubmitSuccess from '../components/forms/SubmitSuccess'

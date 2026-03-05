@@ -4,7 +4,7 @@ import {
   Menu, Bookmark, CirclePlus, FileText,
   TrendingUp, Target, Settings, ChevronsLeft, ChevronsRight
 } from 'lucide-react'
-import { useAuth } from '../lib/auth'
+import { useAuth } from '../lib/auth/AuthContext'
 import { useSidebar } from '../lib/sidebar'
 
 export default function Sidebar() {

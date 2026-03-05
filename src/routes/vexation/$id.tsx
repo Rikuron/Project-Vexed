@@ -7,9 +7,9 @@ import {
   toggleSaveVexation,
   hasUserVoted,
   incrementViewCount,
-} from '../../lib/firestore'
-import { useAuth } from '../../lib/auth'
-import type { Vexation } from '../../lib/types'
+} from '../../lib/db'
+import { useAuth } from '../../lib/auth/AuthContext'
+import type { Vexation } from '../../types'
 
 export const Route = createFileRoute('/vexation/$id')({
   component: VexationDetailPage,

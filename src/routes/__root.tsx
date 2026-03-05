@@ -1,7 +1,7 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { AuthProvider, useAuth } from '../lib/auth'
+import { AuthProvider, useAuth } from '../lib/auth/AuthContext'
 import { SidebarProvider, useSidebar } from '../lib/sidebar'
 import Sidebar from '../components/Sidebar'
 
@@ -52,7 +52,18 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const { collapsed } = useSidebar()
   const { loading } = useAuth()
 
+  const routerState = useRouterState()
+  const isSignInPage = routerState.location.pathname === '/signIn'
+
   if (loading) return <LoadingScreen />
+
+  if (isSignInPage) return (
+    <div className="min-h-screen">
+      <main>
+        {children}
+      </main>
+    </div>
+  )
 
   return (
     <>
@@ -67,7 +78,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </main>
         </div>
       </div>
-
       <style>{`
         @media (min-width: 1024px) {
           :root { --sidebar-offset: ${collapsed ? 64 : 230}px; }

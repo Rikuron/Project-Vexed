@@ -1,4 +1,4 @@
-import type { Vexation } from './types'
+import type { Vexation } from '../types'
 
 // Dummy data for development
 // Replace with Firestore queries in prod

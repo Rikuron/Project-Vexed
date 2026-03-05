@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ThumbsUp, MessageSquare } from 'lucide-react'
-import type { Vexation } from '../../lib/types'
+import type { Vexation } from '../../types'
 
 // Badge colour based on AI-assigned category label
 const CATEGORY_STYLES: Record<string, string> = {

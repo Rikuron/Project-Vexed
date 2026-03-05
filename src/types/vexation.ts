@@ -7,12 +7,10 @@ export const SECTORS = [
 ] as const
 
 export type Sector = typeof SECTORS[number]
-
 export type Severity = 'Low' | 'Medium' | 'High' | 'Critical'
 export type Complexity = 'Beginner' | 'Intermediate' | 'Advanced'
 export type VexationStatus = 'Pending' | 'Analyzed' | 'Claimed' | 'Solved' | 'Closed'
 
-// AI Analysis (returned by the server function)
 export interface AIAnalysis {
   isViolatingPolicies: boolean
   violationReason?: string
@@ -26,12 +24,10 @@ export interface AIAnalysis {
   suggestedTechStack?: string[]
 }
 
-// Core Vexation Document 
 export interface Vexation {
   id: string
   title: string
   description: string
-  // AI-generated fields (populated after analysis)
   sector: Sector
   category: string
   tags: string[]
@@ -40,25 +36,24 @@ export interface Vexation {
   technicalComplexity: Complexity
   keyChallenges: string[]
   suggestedTechStack: string[]
-  // Metadata
   authorId: string
   authorDisplayName: string
   upvotes: number
   viewCount: number
   commentCount: number
-  savedBy: string[]        // array of userIds who bookmarked this
+  savedBy: string[]
   status: VexationStatus
+  claimedByID?: string[] | null
+  solutionUrl?: string[] | null
   createdAt: Timestamp
   updatedAt: Timestamp
 }
 
-// Form input (what the user types before AI analysis) 
 export interface VexationFormData {
   title: string
   description: string
 }
 
-// Vote subcollection document 
 export interface Vote {
   id: string
   vexationId: string
@@ -66,7 +61,6 @@ export interface Vote {
   createdAt: Timestamp
 }
 
-// Comment subcollection document 
 export interface Comment {
   id: string
   vexationId: string
@@ -76,7 +70,6 @@ export interface Comment {
   createdAt: Timestamp
 }
 
-// Query Filters (for browse page) 
 export interface VexationFilters {
   sector?: Sector
   complexity?: Complexity

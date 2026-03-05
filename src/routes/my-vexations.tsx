@@ -1,20 +1,20 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
 import { Loader2, Plus, FileText } from 'lucide-react'
-import { getUserVexations } from '../lib/firestore'
-import { useAuth } from '../lib/auth'
-import type { Vexation, VexationStatus } from '../lib/types'
+import { getUserVexations } from '../lib/db'
+import { useAuth } from '../lib/auth/AuthContext'
+import type { Vexation, VexationStatus } from '../types'
 
 export const Route = createFileRoute('/my-vexations')({
   component: MyVexationsPage,
 })
 
 const STATUS_STYLES: Record<VexationStatus, string> = {
-  pending: 'bg-gray-500/20 text-gray-400',
-  analyzed: 'bg-emerald-500/20 text-emerald-400',
-  claimed: 'bg-amber-500/20 text-amber-400',
-  solved: 'bg-blue-500/20 text-blue-400',
-  closed: 'bg-slate-500/20 text-slate-400',
+  Pending: 'bg-gray-500/20 text-gray-400',
+  Analyzed: 'bg-emerald-500/20 text-emerald-400',
+  Claimed: 'bg-amber-500/20 text-amber-400',
+  Solved: 'bg-blue-500/20 text-blue-400',
+  Closed: 'bg-slate-500/20 text-slate-400',
 }
 
 type FilterTab = 'all' | VexationStatus
@@ -46,9 +46,9 @@ function MyVexationsPage() {
   // Stats
   const totalCount = vexations.length
   const publishedCount = vexations.filter(
-    (v) => v.status === 'analyzed' || v.status === 'claimed'
+    (v) => v.status === 'Analyzed' || v.status === 'Claimed'
   ).length
-  const draftCount = vexations.filter((v) => v.status === 'pending').length
+  const draftCount = vexations.filter((v) => v.status === 'Pending').length
 
   // Not signed in
   if (!authLoading && !user) {
@@ -67,9 +67,9 @@ function MyVexationsPage() {
 
   const tabs: { key: FilterTab; label: string }[] = [
     { key: 'all', label: 'All Problems' },
-    { key: 'analyzed', label: 'Published' },
-    { key: 'solved', label: 'Solved' },
-    { key: 'closed', label: 'Closed' },
+    { key: 'Analyzed', label: 'Published' },
+    { key: 'Solved', label: 'Solved' },
+    { key: 'Closed', label: 'Closed' },
   ]
 
   return (
@@ -161,7 +161,7 @@ function MyVexationsPage() {
                 <div className="col-span-2">
                   <span
                     className={`inline-block rounded-md px-2 py-0.5 text-xs font-semibold uppercase ${
-                      STATUS_STYLES[vex.status] || STATUS_STYLES.pending
+                      STATUS_STYLES[vex.status] || STATUS_STYLES.Pending
                     }`}
                   >
                     {vex.status}

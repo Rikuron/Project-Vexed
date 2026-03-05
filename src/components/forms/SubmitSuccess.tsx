@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { CheckCircle2 } from 'lucide-react'
-import type { AIAnalysis } from '../../lib/types'
+import type { AIAnalysis } from '../../types'
 
 interface SubmitSuccessProps {
   createdId: string
