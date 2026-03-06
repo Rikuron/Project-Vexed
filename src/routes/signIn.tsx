@@ -189,7 +189,7 @@ function SignInPage() {
 
               <button 
                 type="submit"
-                className="w-full bg-[#553CFF] hover:bg-[#4A34DF] text-white font-semibold rounded-lg py-2.5 mt-4 transition-all shadow-[0_0_15px_rgba(85,60,255,0.3)] hover:shadow-[0_0_20px_rgba(85,60,255,0.5)] focus:outline-none"
+                className="w-full bg-[#553CFF] cursor-pointer hover:bg-[#4A34DF] text-white font-semibold rounded-lg py-2.5 mt-4 transition-all shadow-[0_0_15px_rgba(85,60,255,0.3)] hover:shadow-[0_0_20px_rgba(85,60,255,0.5)] focus:outline-none"
               >
                 {isSignUp ? 'Create Account' : 'Sign In'}
               </button>

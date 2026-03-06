@@ -34,12 +34,17 @@ export default function AuthButton() {
         <span className="hidden text-sm font-medium text-gray-200 sm:inline">
           {user.displayName}
         </span>
-        <button
-          onClick={signOut}
-          className="ml-2 rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-gray-400 transition-colors cursor-pointer hover:border-red-500/50 hover:text-red-400"
+        
+        <Link
+          to='/signIn'
         >
-          Sign Out
-        </button>
+          <button
+            onClick={signOut}
+            className="ml-2 rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-gray-400 transition-colors cursor-pointer hover:border-red-500/50 hover:text-red-400"
+          >
+            Sign Out
+          </button>
+        </Link>
       </div>
     )
   }
