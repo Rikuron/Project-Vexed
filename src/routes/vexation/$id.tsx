@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ThumbsUp, Bookmark, Share2, MessageSquare, Loader2, Shield, Cpu, AlertTriangle, } from 'lucide-react'
 import { 
   getVexationById,
@@ -34,6 +34,7 @@ function VexationDetailPage() {
   const [voteLoading, setVoteLoading] = useState(false)
   const [localUpvotes, setLocalUpvotes] = useState(0)
   const [shareTooltip, setShareTooltip] = useState(false)
+  const viewCountedRef = useRef(false)
 
   // Fetch vexation data
   useEffect(() => {
@@ -47,7 +48,10 @@ function VexationDetailPage() {
           setIsSaved(user ? data.savedBy.includes(user.uid) : false)
 
           // Increment view count (fire and forget)
-          incrementViewCount(id).catch(() => {})
+          if (!viewCountedRef.current) {
+            viewCountedRef.current = true
+            incrementViewCount(id).catch(() => {})
+          }
 
           // Check if user has voted
           if (user) {

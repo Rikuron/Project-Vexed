@@ -69,7 +69,7 @@ export default function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 px-2 pb-4 overflow-y-auto space-y-5">
-          <div>
+          <div className="space-y-1">
             {!collapsed && (
               <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
                 Personal
@@ -78,7 +78,7 @@ export default function Sidebar() {
             <NavLink to="/my-vexations" icon={<FileText size={16} />} label="My Vexations" collapsed={collapsed} onClick={() => setIsOpen(false)} />
             <NavLink to="/my/saved" icon={<Bookmark size={16} />} label="Saved" collapsed={collapsed} onClick={() => setIsOpen(false)} />
           </div>
-          <div>
+          <div className="space-y-1">
             {!collapsed && (
               <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
                 Discover

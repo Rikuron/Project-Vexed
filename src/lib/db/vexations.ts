@@ -18,6 +18,13 @@ import {
 import { db } from '../firebase'
 import type { Vexation, AIAnalysis, VexationFilters } from '../../types'
 
+function normalizeCase(value?: string) {
+  if (!value) return ''
+  if (value.toUpperCase() === 'AI/ML') return 'AI/ML'
+
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+}
+
 // Collection References
 const vexationsRef = collection(db, 'vexations')
 
@@ -33,12 +40,12 @@ export async function createVexation(
     description: formData.description,
 
     // AI-generated fields
-    sector: aiAnalysis.sector,
-    category: aiAnalysis.category,
+    sector: normalizeCase(aiAnalysis.sector),
+    category: normalizeCase(aiAnalysis.category),
     tags: aiAnalysis.tags,
-    severity: aiAnalysis.severity,
+    severity: normalizeCase(aiAnalysis.severity),
     summary: aiAnalysis.summary,
-    technicalComplexity: aiAnalysis.technicalComplexity,
+    technicalComplexity: normalizeCase(aiAnalysis.technicalComplexity),
     keyChallenges: aiAnalysis.keyChallenges ?? [],
     suggestedTechStack: aiAnalysis.suggestedTechStack ?? [],
 
@@ -74,12 +81,12 @@ export async function getVexations(
 
   // Filter by sector
   if (filters.sector) {
-    constraints.push(where('sector', '==', filters.sector))
+    constraints.push(where('sector', '==', normalizeCase(filters.sector)))
   }
 
   // Filter by complexity
   if (filters.complexity) {
-    constraints.push(where('technicalComplexity', '==', filters.complexity))
+    constraints.push(where('technicalComplexity', '==', normalizeCase(filters.complexity)))
   }
 
   // Sort order
@@ -109,16 +116,21 @@ export async function getVexations(
 
 // Read (user's own vexations) / GET
 export async function getUserVexations(userId: string): Promise<Vexation[]> {
-  const q = query(
-    vexationsRef,
-    where('authorId', '==', userId),
-    orderBy('createdAt', 'desc')
-  )
-  const snapshot = await getDocs(q)
+  try {
+    const q = query(
+      vexationsRef,
+      where('authorId', '==', userId),
+      orderBy('createdAt', 'desc')
+    )
+    const snapshot = await getDocs(q)
 
-  return snapshot.docs.map(
-    (doc) => ({ id: doc.id, ...doc.data() }) as Vexation
-  )
+    return snapshot.docs.map(
+      (doc) => ({ id: doc.id, ...doc.data() }) as Vexation
+    )
+  } catch (error: any) {
+    console.error('Error fetching user vexations:', error)
+    return []
+  }
 }
 
 // Upvote (atomic increment + prevent duplicates via votes subcollection) / POST
@@ -173,16 +185,21 @@ export async function toggleSaveVexation(
 
 // Get saved vexations for a user / GET
 export async function getSavedVexations(userId: string): Promise<Vexation[]> {
-  const q = query(
-    vexationsRef,
-    where('savedBy', 'array-contains', userId),
-    orderBy('createdAt', 'desc')
-  )
-  const snapshot = await getDocs(q)
-
-  return snapshot.docs.map(
-    (doc) => ({ id: doc.id, ...doc.data() }) as Vexation
-  )
+  try {
+    const q = query(
+      vexationsRef,
+      where('savedBy', 'array-contains', userId),
+      orderBy('createdAt', 'desc')
+    )
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map(
+      (doc) => ({ id: doc.id, ...doc.data() }) as Vexation
+    )
+  } catch (error: any) {
+    console.error("Error fetching saved vexations. Missing Index:")
+    console.error(error.message)
+    return []
+  }
 }
 
 // Increment view count / POST

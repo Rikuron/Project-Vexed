@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start"
-import type { AIAnalysis } from "./types";
+import type { AIAnalysis } from "../types"
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 
