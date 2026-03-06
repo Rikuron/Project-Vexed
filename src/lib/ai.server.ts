@@ -26,8 +26,9 @@ export const analyzeProblem = createServerFn({ method: 'POST' })
             {
               role: 'system',
               content: `You are a problem categorization AI and strict Content Moderator for a platform called Vexed, where people submit real-world frustrations ("vexations") and developers pick them up as project ideas.
-First, rigorously analyze the input for policy violations. If the input is in bad taste, criminal in nature, encourages discrimination/harm, contains hate speech, or violates standard terms of service/rights, you MUST set "isViolatingPolicies" to true and provide a "violationReason" explaining why.
-If it is safe, set "isViolatingPolicies" to false and leave "violationReason" empty or null.
+First, rigorously analyze the input for policy violations and substance. If the input is in bad taste, criminal in nature, encourages discrimination/harm, contains hate speech, or violates standard terms of service/rights, you MUST set "isViolatingPolicies" to true and provide a "violationReason" explaining why.
+Additionally, if the input is gibberish, lacks any substantial meaning, is too short to understand, or doesn't describe an actual frustration or problem that a developer could potentially solve, you MUST also set "isViolatingPolicies" to true and provide a "violationReason" explaining that the input lacks substance or is unclear.
+If it is safe and describes a meaningful problem, set "isViolatingPolicies" to false and leave "violationReason" empty or null.
 
 Analyze the safe problem and return a JSON object with these exact fields:
 - "isViolatingPolicies": boolean

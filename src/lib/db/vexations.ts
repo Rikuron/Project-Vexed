@@ -106,12 +106,18 @@ export async function getVexations(
   // Limit results
   constraints.push(firestoreLimit(filters.limit ?? 20))
 
-  const q = query(vexationsRef, ...constraints)
-  const snapshot = await getDocs(q)
+  try {
+    const q = query(vexationsRef, ...constraints)
+    const snapshot = await getDocs(q)
 
-  return snapshot.docs.map(
-    (doc) => ({ id: doc.id, ...doc.data() }) as Vexation
-  )
+    return snapshot.docs.map(
+      (doc) => ({ id: doc.id, ...doc.data() }) as Vexation
+    )
+  } catch (error: any) {
+    console.error('Error fetching vexations:', error)
+    console.error(error.message)
+    return []
+  }
 }
 
 // Read (user's own vexations) / GET
