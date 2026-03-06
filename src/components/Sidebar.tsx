@@ -10,7 +10,7 @@ import { useSidebar } from '../lib/sidebar'
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)   // mobile slide-in
   const { collapsed, toggle } = useSidebar()    // desktop collapse
-  const { user } = useAuth()
+  const { user, userProfile } = useAuth()
 
   const sidebarWidth = collapsed ? 'w-16' : 'w-[230px]'
 
@@ -123,7 +123,7 @@ export default function Sidebar() {
                   )}
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-white truncate">{user.displayName ?? 'User'}</p>
-                    <p className="text-xs text-gray-500 truncate">Poster</p>
+                    <p className="text-xs text-gray-500 truncate">{userProfile?.role ?? 'Poster'}</p>
                   </div>
                 </div>
                 <button className="p-1.5 text-gray-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors shrink-0" aria-label="Settings">

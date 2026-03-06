@@ -28,12 +28,9 @@ function SignInPage() {
   const handleProviderLogin = async (provider: 'google' | 'github' | 'twitter' | 'microsoft' | 'linkedin') => {
     try {
       setError(null)
-      await signInWithProvider(provider, isSignUp ? role : undefined)
-      if (window.history.length > 2) {
-         router.history.back()
-      } else {
-         navigate({ to: '/' })
-      }
+      await signInWithProvider(provider, undefined)
+      
+      navigate({ to: '/complete-profile'})
     } catch (err: any) {
       setError(err.message || 'An error occurred during authentication.')
     }

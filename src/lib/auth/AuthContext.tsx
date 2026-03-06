@@ -39,8 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe
   }, [])
 
-  const signInWithProvider = async (providerName: 'google' | 'github' | 'twitter' | 'microsoft' | 'linkedin', role?: UserRole) => {
-    const profile = await authService.signInWithProvider(providerName, role)
+  const signInWithProvider = async (providerName: 'google' | 'github' | 'twitter' | 'microsoft' | 'linkedin') => {
+    const profile = await authService.signInWithProvider(providerName)
     setUserProfile(profile)
   }
 

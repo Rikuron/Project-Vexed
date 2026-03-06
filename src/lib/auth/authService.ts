@@ -32,26 +32,14 @@ const getProviderInstance = (name: string): FirebaseAuthProvider => {
 export const authService = {
   signInWithProvider: async (
     providerName: 'google' | 'github' | 'twitter' | 'microsoft' | 'linkedin',
-    selectedRole: UserRole = 'Poster'
   ) => {
     const provider = getProviderInstance(providerName)
     const result = await signInWithPopup(auth, provider)
     const fbUser = result.user
 
     const existingProfile = await getUserProfile(fbUser.uid)
-
-    if (!existingProfile) {
-      await createUserProfile(fbUser.uid, {
-        email: fbUser.email || '',
-        displayName: fbUser.displayName || '',
-        photoURL: fbUser.photoURL,
-        role: selectedRole,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-      })
-    }
     
-    return getUserProfile(fbUser.uid)
+    return existingProfile
   },
 
   signUpWithEmail: async (
