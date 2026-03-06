@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Loader2, Bookmark, ThumbsUp, Eye } from 'lucide-react'
+import { Loader2, Bookmark, ArrowBigUp, Eye } from 'lucide-react'
 import { getSavedVexations } from '../../lib/db'
 import { useAuth } from '../../lib/auth/AuthContext'
 import type { Vexation } from '../../types'
@@ -86,7 +86,7 @@ function SavedPage() {
                 </p>
                 <div className="flex items-center gap-4 text-xs text-gray-500 pt-3 border-t border-slate-700/50">
                   <span className="flex items-center gap-1">
-                    <ThumbsUp size={12} /> {vex.upvotes}
+                    <ArrowBigUp size={12} /> {vex.upvotes}
                   </span>
                   <span className="flex items-center gap-1">
                     <Eye size={12} /> {vex.viewCount}

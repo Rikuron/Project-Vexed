@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
-import { ThumbsUp, Bookmark, Share2, MessageSquare, Loader2, Shield, Cpu, AlertTriangle, } from 'lucide-react'
+import { ArrowBigUp, Bookmark, Share2, MessageSquare, Loader2, Shield, Cpu, AlertTriangle, } from 'lucide-react'
 import { 
   getVexationById,
   upvoteVexation,
@@ -235,7 +235,7 @@ function VexationDetailPage() {
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
                 title={!user ? 'Sign in to upvote' : ''}
               >
-                <ThumbsUp size={16} fill={hasVoted ? 'currentColor' : 'none'} />
+                <ArrowBigUp size={16} fill={hasVoted ? 'currentColor' : 'none'} />
                 {localUpvotes}
               </button>
 

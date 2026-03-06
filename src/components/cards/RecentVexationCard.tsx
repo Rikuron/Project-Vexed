@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ThumbsUp, MessageSquare } from 'lucide-react'
+import { ArrowBigUp, MessageSquare } from 'lucide-react'
 import type { Vexation } from '../../types'
 
 // Badge colour based on AI-assigned category label
@@ -46,7 +46,7 @@ export default function RecentVexationCard({ vexation: vex }: { vexation: Vexati
       {/* Footer stats */}
       <div className="flex items-center gap-4 text-xs text-gray-500">
         <span className="flex items-center gap-1">
-          <ThumbsUp size={11} /> {vex.upvotes}
+          <ArrowBigUp size={13} /> {vex.upvotes}
         </span>
         <span className="flex items-center gap-1">
           <MessageSquare size={11} /> {vex.commentCount}

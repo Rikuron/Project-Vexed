@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
-import { Search, ThumbsUp, Eye, Loader2, LayoutGrid, List } from 'lucide-react'
+import { Search, ArrowBigUp, Eye, Loader2, LayoutGrid, List } from 'lucide-react'
 import { getVexations } from '../lib/db'
 import type { Vexation, Sector, Complexity, VexationFilters } from '../types'
 import { SECTORS } from '../types'
@@ -244,7 +244,7 @@ function VexationCard({
         {/* Stats */}
         <div className="flex items-center gap-4 text-xs text-gray-500 shrink-0">
           <span className="flex items-center gap-1">
-            <ThumbsUp size={12} /> {vex.upvotes}
+            <ArrowBigUp size={12} /> {vex.upvotes}
           </span>
           <span className="flex items-center gap-1">
             <Eye size={12} /> {vex.viewCount}
@@ -295,7 +295,7 @@ function VexationCard({
       {/* Footer: upvotes, views, complexity */}
       <div className="flex items-center gap-4 text-xs text-gray-500 pt-3 border-t border-slate-700/50">
         <span className="flex items-center gap-1">
-          <ThumbsUp size={12} /> {formatCount(vex.upvotes)}
+          <ArrowBigUp size={12} /> {formatCount(vex.upvotes)}
         </span>
         <span className="flex items-center gap-1">
           <Eye size={12} /> {formatCount(vex.viewCount)}
