@@ -1,313 +1,193 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
-import { Search, ArrowBigUp, Eye, Loader2, LayoutGrid, List } from 'lucide-react'
+import { Search, Compass, ExternalLink } from 'lucide-react'
 import { getVexations } from '../lib/db'
-import type { Vexation, Sector, Complexity, VexationFilters } from '../types'
-import { SECTORS } from '../types'
+import { DUMMY_VEXATIONS } from '../lib/dummyData'
+import type { Vexation } from '../types'
 
-export const Route = createFileRoute('/browse')({ component: BrowsePage })
+export const Route = createFileRoute('/browse')({
+  component: BrowsePage,
+})
 
-// Severity colors for pain-level bars
-const SEVERITY_COLORS: Record<string, string> = {
-  low: 'bg-emerald-500',
-  medium: 'bg-yellow-500',
-  high: 'bg-orange-500',
-  critical: 'bg-red-500',
-}
-
-const SECTOR_BADGE_COLORS: Record<string, string> = {
-  health: 'bg-emerald-500/20 text-emerald-400',
-  finance: 'bg-blue-500/20 text-blue-400',
-  logistics: 'bg-amber-500/20 text-amber-400',
-  productivity: 'bg-cyan-500/20 text-cyan-400',
-  education: 'bg-purple-500/20 text-purple-400',
-  environment: 'bg-green-500/20 text-green-400',
-  social: 'bg-pink-500/20 text-pink-400',
-  technology: 'bg-indigo-500/20 text-indigo-400',
-  'ai/ml': 'bg-violet-500/20 text-violet-400',
-  other: 'bg-gray-500/20 text-gray-400',
-}
-
-type SortOption = 'trending' | 'newest' | 'upvotes'
+type SortOption = 'newest' | 'trending' | 'upvotes'
 
 function BrowsePage() {
   const [vexations, setVexations] = useState<Vexation[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Filters & Sorting state
   const [searchQuery, setSearchQuery] = useState('')
+  const [activeTab, setActiveTab] = useState<'All' | 'High Priority' | 'Unclaimed'>('All')
+  const [sortOption, setSortOption] = useState<SortOption>('newest')
 
-  // Filters
-  const [sector, setSector] = useState<Sector | ''>('')
-  const [complexity, setComplexity] = useState<Complexity | ''>('')
-  const [sortBy, setSortBy] = useState<SortOption>('trending')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-
-  // Fetch vexations when filters change
   useEffect(() => {
-    setLoading(true)
-    const filters: VexationFilters = {
-      sortBy,
-      limit: 20,
-    }
-    if (sector) filters.sector = sector
-    if (complexity) filters.complexity = complexity
-
-    getVexations(filters)
-      .then(setVexations)
-      .catch(console.error)
+    getVexations({ sortBy: sortOption })
+      .then((data) => setVexations(data.length > 0 ? data : DUMMY_VEXATIONS))
+      .catch(() => setVexations(DUMMY_VEXATIONS))
       .finally(() => setLoading(false))
-  }, [sector, complexity, sortBy])
+  }, [sortOption])
 
-  // Client-side search filtering (Firestore doesn't support full-text search natively)
+  // Simple memory filtering logic to power Tabs and Search
   const filteredVexations = useMemo(() => {
-    if (!searchQuery.trim()) return vexations
-    const q = searchQuery.toLowerCase()
-    return vexations.filter(
-      (v) =>
-        v.title.toLowerCase().includes(q) ||
-        v.summary.toLowerCase().includes(q) ||
-        v.tags.some((t) => t.toLowerCase().includes(q))
-    )
-  }, [vexations, searchQuery])
+    return vexations.filter((vex) => {
+      const matchQuery = vex.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         vex.description.toLowerCase().includes(searchQuery.toLowerCase())
 
-  return (
-    <div className="min-h-screen bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Top Bar: Search + Submit CTA */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
-            />
-            <input
-              type="text"
-              placeholder="Search problems, sectors, or pain levels..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800/50 pl-11 pr-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-colors"
-            />
-          </div>
-          <Link
-            to="/submit"
-            search={{ prefill: '' }}
-            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-6 py-3 text-sm font-semibold text-white transition-colors whitespace-nowrap"
-          >
-            Submit Problem
-          </Link>
-        </div>
+      let matchTab = true
+      // Types use capital letters (Severity: 'High' | 'Critical')
+      if (activeTab === 'High Priority') matchTab = vex.severity === 'High' || vex.severity === 'Critical'
+      // Wait for someone to claim it
+      if (activeTab === 'Unclaimed') matchTab = vex.status === 'Analyzed' || vex.status === 'Pending'
 
-        {/* Filter Bar */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          {/* Sector filter */}
-          <select
-            value={sector}
-            onChange={(e) => setSector(e.target.value as Sector | '')}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-indigo-500/60"
-          >
-            <option value="">Sector: All</option>
-            {SECTORS.map((s) => (
-              <option key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </option>
-            ))}
-          </select>
+      return matchQuery && matchTab
+    })
+  }, [vexations, searchQuery, activeTab])
 
-          {/* Complexity filter */}
-          <select
-            value={complexity}
-            onChange={(e) => setComplexity(e.target.value as Complexity | '')}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-indigo-500/60"
-          >
-            <option value="">Complexity: Any</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Sort toggles */}
-          <div className="flex items-center rounded-lg border border-slate-700 bg-slate-800 overflow-hidden">
-            {(['trending', 'newest', 'upvotes'] as SortOption[]).map((opt) => (
-              <button
-                key={opt}
-                onClick={() => setSortBy(opt)}
-                className={`px-4 py-2 text-sm font-medium transition-colors ${
-                  sortBy === opt
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                {opt.charAt(0).toUpperCase() + opt.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* View mode toggle */}
-          <div className="flex items-center gap-1 border border-slate-700 rounded-lg p-1 bg-slate-800">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-slate-700 text-white' : 'text-gray-500'}`}
-            >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-slate-700 text-white' : 'text-gray-500'}`}
-            >
-              <List size={16} />
-            </button>
-          </div>
-        </div>
-
-        {/* Results Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-white">
-            Discovered Problems{' '}
-            <span className="text-sm font-normal text-gray-500 ml-2">
-              {filteredVexations.length} results
-            </span>
-          </h1>
-        </div>
-
-        {/* Content */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={32} className="animate-spin text-indigo-400" />
-          </div>
-        ) : filteredVexations.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">
-            <p className="text-lg mb-2">No problems found.</p>
-            <p className="text-sm">Try adjusting your filters or search query.</p>
-          </div>
-        ) : (
-          <div
-            className={
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-                : 'flex flex-col gap-3'
-            }
-          >
-            {filteredVexations.map((vex) => (
-              <VexationCard key={vex.id} vexation={vex} viewMode={viewMode} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-// Vexation Card Component
-function VexationCard({
-  vexation: vex,
-  viewMode,
-}: {
-  vexation: Vexation
-  viewMode: 'grid' | 'list'
-}) {
-  const sectorColor =
-    SECTOR_BADGE_COLORS[vex.sector] || SECTOR_BADGE_COLORS.other
-  const severityColor = SEVERITY_COLORS[vex.severity] || SEVERITY_COLORS.low
-
-  // Severity percentage for the visual bar
-  const severityPercent =
-    vex.severity === 'Critical'
-      ? 98
-      : vex.severity === 'High'
-        ? 75
-        : vex.severity === 'Medium'
-          ? 50
-          : 25
-
-  if (viewMode === 'list') {
-    return (
-      <Link
-        to="/vexation/$id"
-        params={{ id: vex.id }}
-        className="group flex items-center gap-4 rounded-xl border border-slate-700/50 bg-slate-800/30 p-4 hover:border-indigo-500/40 hover:bg-slate-800/50 transition-all"
-      >
-        {/* Sector badge */}
-        <span className={`rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider shrink-0 ${sectorColor}`}>
-          {vex.sector}
-        </span>
-
-        {/* Title + summary */}
-        <div className="flex-1 min-w-0">
-          <h3 className="text-white font-semibold group-hover:text-indigo-300 transition-colors truncate">
-            {vex.title}
-          </h3>
-          <p className="text-sm text-gray-500 truncate">{vex.summary}</p>
-        </div>
-
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-xs text-gray-500 shrink-0">
-          <span className="flex items-center gap-1">
-            <ArrowBigUp size={12} /> {vex.upvotes}
-          </span>
-          <span className="flex items-center gap-1">
-            <Eye size={12} /> {vex.viewCount}
-          </span>
-          <span className="capitalize">{vex.technicalComplexity}</span>
-        </div>
-      </Link>
-    )
+  // Mocking tag color lookup based on new design constraints
+  const getSectorStyle = (sector: string) => {
+    const s = sector.toLowerCase()
+    if (s.includes('tech') || s.includes('engineering')) return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+    if (s.includes('design') || s.includes('creative')) return 'bg-pink-500/10 text-pink-400 border-pink-500/20'
+    return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
   }
 
   return (
-    <Link
-      to="/vexation/$id"
-      params={{ id: vex.id }}
-      className="group flex flex-col rounded-xl border border-slate-700/50 bg-slate-800/30 p-5 hover:border-indigo-500/40 hover:bg-slate-800/50 transition-all duration-200"
-    >
-      {/* Top: sector badge + overflow menu placeholder */}
-      <div className="flex items-center justify-between mb-3">
-        <span className={`rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${sectorColor}`}>
-          {vex.sector}
-        </span>
-      </div>
-
-      {/* Title */}
-      <h3 className="text-white font-semibold mb-2 group-hover:text-indigo-300 transition-colors line-clamp-2">
-        {vex.title}
-      </h3>
-
-      {/* Summary */}
-      <p className="text-sm text-gray-400 mb-4 line-clamp-2 flex-1">
-        {vex.summary}
-      </p>
-
-      {/* Pain level bar */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-          <span>Pain Level: {vex.severity.charAt(0).toUpperCase() + vex.severity.slice(1)}</span>
-          <span>{severityPercent}% Intensity</span>
+    <div className="min-h-screen bg-[#0D0C15] text-white px-6 py-8 md:px-10 font-sans">
+      <div className="max-w-[1400px] mx-auto">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight mb-2 flex items-center gap-3">
+               <Compass className="text-[#553CFF]" size={28} /> Discover Problems
+            </h1>
+            <p className="text-slate-400 text-sm">
+              Search the Vexed index of real-world frustrations looking for a <span className="text-[#553CFF] font-semibold">technical solution</span>.
+            </p>
+          </div>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative w-full md:w-[280px]">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search issues, technologies, or tags..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-[#1A1825] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-[#553CFF] w-full transition-colors placeholder:text-slate-500 font-medium"
+              />
+            </div>
+          </div>
         </div>
-        <div className="h-1 rounded-full bg-slate-700 overflow-hidden">
-          <div
-            className={`h-full rounded-full ${severityColor} transition-all`}
-            style={{ width: `${severityPercent}%` }}
-          />
-        </div>
-      </div>
 
-      {/* Footer: upvotes, views, complexity */}
-      <div className="flex items-center gap-4 text-xs text-gray-500 pt-3 border-t border-slate-700/50">
-        <span className="flex items-center gap-1">
-          <ArrowBigUp size={12} /> {formatCount(vex.upvotes)}
-        </span>
-        <span className="flex items-center gap-1">
-          <Eye size={12} /> {formatCount(vex.viewCount)}
-        </span>
-        <span className="ml-auto capitalize">{vex.technicalComplexity}</span>
+        {/* Tab / Filter Bar */}
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5 overflow-x-auto no-scrollbar gap-6">
+          <div className="flex items-center gap-6 shrink-0">
+             {['All', 'High Priority', 'Unclaimed'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab as any)}
+                  className={`text-sm font-semibold transition-colors pb-4 -mb-4 border-b-2 ${
+                    activeTab === tab 
+                     ? 'border-[#553CFF] text-white' 
+                     : 'border-transparent text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {tab}
+                </button>
+             ))}
+          </div>
+
+          <div className="shrink-0 flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Sort By:</span>
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              className="bg-[#151320] border border-white/5 disabled:opacity-50 text-white text-sm font-medium rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#553CFF] appearance-none cursor-pointer hover:bg-[#1A1825] transition-colors"
+            >
+              <option value="newest">Featured</option>
+              <option value="trending">Most Popular</option>
+              <option value="upvotes">Most Upvoted</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Dynamic Vexation Stack Map */}
+        {loading ? (
+          <div className="flex justify-center py-20">
+             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#553CFF]"></div>
+          </div>
+        ) : filteredVexations.length === 0 ? (
+          <div className="border border-white/5 bg-[#1A1825] rounded-xl p-12 text-center text-slate-500 font-medium">
+             No vexations found matching your criteria.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredVexations.map((vex) => (
+              <div key={vex.id} className="bg-[#151320] hover:bg-[#1A1825] border border-white/5 hover:border-white/10 rounded-2xl p-6 transition-all group flex flex-col md:flex-row gap-6 justify-between">
+                   
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className={`px-2.5 py-0.5 border rounded text-[10px] font-bold tracking-widest uppercase ${getSectorStyle(vex.sector)}`}>
+                      {vex.sector}
+                    </span>
+                    {vex.severity === 'High' && (
+                      <span className="px-2.5 py-0.5 border border-rose-500/20 bg-rose-500/10 rounded text-[10px] font-bold tracking-widest uppercase text-rose-400">
+                        High Priority
+                      </span>
+                    )}
+                    {vex.severity === 'Critical' && (
+                      <span className="px-2.5 py-0.5 border border-red-500/20 bg-red-500/10 rounded text-[10px] font-bold tracking-widest uppercase text-red-400">
+                        Critical
+                      </span>
+                    )}
+                    <span className="text-slate-500 text-xs font-medium">• {vex.viewCount} views</span>
+                  </div>
+
+                      
+                  <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-indigo-300 transition-colors line-clamp-2">
+                    {vex.title}
+                  </h3>
+                      
+                  <p className="text-sm text-slate-400 leading-relaxed line-clamp-2 mb-4">
+                        {vex.description}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                         <span className="bg-[#0D0C15] border border-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300 rounded-md">Status: {vex.status}</span>
+                         <span className="bg-[#0D0C15] border border-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300 rounded-md">Complexity: {vex.technicalComplexity || 'Unknown'}</span>
+                      </div>
+                   </div>
+
+                   <div className="w-full md:w-[220px] shrink-0 flex flex-col items-start md:items-end justify-between border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6">
+                      <div className="w-full">
+                         <div className="text-left md:text-right mb-4">
+                            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase block mb-1">Current Bounty</span>
+                            <span className="text-2xl font-black text-white flex items-center md:justify-end gap-1.5">
+                               <span className="text-[#553CFF]">₿</span> 1.50
+                            </span>
+                         </div>
+                         <div className="flex -space-x-3 justify-start md:justify-end mb-5">
+                             <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-[#151320] flex items-center justify-center text-[9px] font-bold text-slate-300 z-30">US</div>
+                             <div className="w-8 h-8 rounded-full bg-indigo-800 border-2 border-[#151320] flex items-center justify-center text-[9px] font-bold text-indigo-200 z-20">ER</div>
+                             <div className="w-8 h-8 rounded-full bg-[#2A263D] border-2 border-[#151320] flex items-center justify-center text-[9px] font-bold text-white z-10 text-center leading-none">+4<br/>Watch</div>
+                         </div>
+                      </div>
+                      
+                      <Link 
+                        to={`/vexation/$id`}
+                        params={{ id: vex.id }}
+                        className="w-full bg-[#553CFF]/10 hover:bg-[#553CFF] text-[#553CFF] hover:text-white border border-[#553CFF]/20 px-4 py-2.5 rounded-lg text-[13px] font-bold flex items-center justify-center gap-2 transition-all group-hover:shadow-[0_0_15px_rgba(85,60,255,0.2)]"
+                      >
+                         View Details <ExternalLink size={14} className="opacity-70 group-hover:opacity-100" />
+                      </Link>
+                   </div>
+
+                </div>
+             ))}
+          </div>
+        )}
+
       </div>
-    </Link>
+    </div>
   )
-}
-
-// Helper: format large numbers
-function formatCount(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
-  return String(n)
 }

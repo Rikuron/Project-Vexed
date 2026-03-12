@@ -6,10 +6,27 @@ import { DUMMY_VEXATIONS } from '../lib/dummyData'
 import type { Vexation } from '../types'
 import AuthButton from '../components/auth/AuthButton'
 import RecentVexationCard from '../components/cards/RecentVexationCard'
+import { useAuth } from '../lib/auth/AuthContext'
+import DeveloperDashboard from '../components/DeveloperDashboard'
+import LoadingScreen from '@/components/LoadingScreen'
 
-export const Route = createFileRoute('/')({ component: LandingPage })
+export const Route = createFileRoute('/')({ component: IndexPage })
 
-function LandingPage() {
+function IndexPage() {
+  const { userProfile, loading: authLoading } = useAuth()
+
+  if (authLoading) return <LoadingScreen />
+
+  // Route to the correct dashboard experience based on user role
+  if (userProfile?.role === 'Solver') return <DeveloperDashboard />
+
+  return <PosterLandingPage />
+}
+
+// ---------------------------------------------------------------------------------
+// POSTER (ORIGINAL) LANDING PAGE
+// ---------------------------------------------------------------------------------
+function PosterLandingPage() {
   const navigate = useNavigate()
   const [quickInput, setQuickInput] = useState('')
   const [recentVexations, setRecentVexations] = useState<Vexation[]>([])

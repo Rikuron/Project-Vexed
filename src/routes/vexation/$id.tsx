@@ -7,6 +7,8 @@ import {
   toggleSaveVexation,
   hasUserVoted,
   incrementViewCount,
+  claimVexation,
+  submitSolution
 } from '../../lib/db'
 import { useAuth } from '../../lib/auth/AuthContext'
 import type { Vexation } from '../../types'
@@ -15,7 +17,7 @@ export const Route = createFileRoute('/vexation/$id')({
   component: VexationDetailPage,
 })
 
-// ── Severity badge styling ──
+// Severity badge styling
 const SEVERITY_STYLES: Record<string, string> = {
   low: 'bg-emerald-500/20 text-emerald-400',
   medium: 'bg-yellow-500/20 text-yellow-400',
@@ -25,7 +27,7 @@ const SEVERITY_STYLES: Record<string, string> = {
 
 function VexationDetailPage() {
   const { id } = Route.useParams()
-  const { user } = useAuth()
+  const { user, userProfile } = useAuth()
 
   const [vexation, setVexation] = useState<Vexation | null>(null)
   const [loading, setLoading] = useState(true)
@@ -34,6 +36,8 @@ function VexationDetailPage() {
   const [voteLoading, setVoteLoading] = useState(false)
   const [localUpvotes, setLocalUpvotes] = useState(0)
   const [shareTooltip, setShareTooltip] = useState(false)
+  const [claimLoading, setClaimLoading] = useState(false)
+  const [solveLoading, setSolveLoading] = useState(false)
   const viewCountedRef = useRef(false)
 
   // Fetch vexation data
@@ -69,7 +73,7 @@ function VexationDetailPage() {
     load()
   }, [id, user])
 
-  // ── Upvote handler ──
+  // Upvote handler
   async function handleUpvote() {
     if (!user || voteLoading) return
     setVoteLoading(true)
@@ -84,7 +88,7 @@ function VexationDetailPage() {
     }
   }
 
-  // ── Save/bookmark handler ──
+  // Save/bookmark handler
   async function handleSave() {
     if (!user) return
     try {
@@ -95,14 +99,14 @@ function VexationDetailPage() {
     }
   }
 
-  // ── Share handler ──
+  // Share handler
   function handleShare() {
     navigator.clipboard.writeText(window.location.href)
     setShareTooltip(true)
     setTimeout(() => setShareTooltip(false), 2000)
   }
 
-  // ── Loading state ──
+  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -111,7 +115,7 @@ function VexationDetailPage() {
     )
   }
 
-  // ── Not found ──
+  // Not found
   if (!vexation) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-center px-6">
@@ -129,10 +133,62 @@ function VexationDetailPage() {
     )
   }
 
-  const severityStyle =
-    SEVERITY_STYLES[vexation.severity] || SEVERITY_STYLES.low
+  // Claim handler
+  async function handleClaim() {
+    if (!user || claimLoading || !vexation) return
 
-  // ── Complexity score visual (map to number for the visual) ──
+    setClaimLoading(true)
+
+    try {
+      await claimVexation(vexation.id, user.uid)
+
+      setVexation({
+        ...vexation,
+        status: 'Claimed',
+        claimedByID: [...(vexation.claimedByID || []), user.uid]
+      })
+    } catch (error) {
+      console.error('Failed to claim: ', error)
+      alert("Failed to claim vexation. Ensure you're logged in as a Developer.")
+    } finally {
+      setClaimLoading(false)
+    }
+  }
+
+  // Solve handler
+  async function handleSolve() {
+    if (!user || solveLoading || !vexation) return
+
+    const url = window.prompt("Submit the URL to your solution (e.g., GitHub repo or Live Demo): ")
+    if (!url) return
+
+    if (!url.startsWith('https://')) {
+      alert("Please enter a valid URL starting with https://")
+      return
+    }
+
+    setSolveLoading(true)
+    try {
+      await submitSolution(vexation.id, user.uid, url)
+
+      setVexation({
+        ...vexation,
+        status: 'Solved',
+        solutionUrl: [...(vexation.solutionUrl || []), url]
+      })
+    } catch (error) {
+      console.error('Failed to submit solution: ', error)
+      alert("Failed to submit solution. Try again later.")
+    } finally {
+      setSolveLoading(false)
+    }
+  }
+
+  const isSolver = userProfile?.role === 'Solver'
+  const isClaimedByMe = user && vexation?.claimedByID?.includes(user.uid)
+
+  const severityStyle = SEVERITY_STYLES[vexation.severity] || SEVERITY_STYLES.low
+  // Complexity score visual (map to number for the visual)
   const complexityScore =
     vexation.technicalComplexity === 'Advanced'
       ? 8.5
@@ -143,7 +199,7 @@ function VexationDetailPage() {
   return (
     <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* ── Breadcrumb + actions bar ── */}
+        {/* Breadcrumb + actions bar */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <Link to="/browse" className="hover:text-white transition-colors">
@@ -188,9 +244,9 @@ function VexationDetailPage() {
           </div>
         </div>
 
-        {/* ── Two-column layout ── */}
+        {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ── LEFT COLUMN (2/3 width) ── */}
+          {/* LEFT COLUMN (2/3 width) */}
           <div className="lg:col-span-2 space-y-6">
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2">
@@ -222,6 +278,47 @@ function VexationDetailPage() {
                 {vexation.description}
               </p>
             </div>
+
+            {/* Developer Actions */}
+            {isSolver && vexation && (
+              <div className="flex bg-slate-800/50 rounded-lg p-4 mb-4 border border-indigo-500/20 items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Developer Actions</h3>
+                  <p className="text-xs text-gray-400">
+                    {vexation.status === 'Solved' 
+                      ? 'This vexation has been solved!'
+                      : isClaimedByMe 
+                        ? 'You have claimed this task. Ready to submit?' 
+                        : 'Take ownership and start building a solution.'}
+                  </p>
+                </div>
+                
+                {vexation.status !== 'Solved' && (
+                  <div>
+                    {!isClaimedByMe && (vexation.status === 'Analyzed' || vexation.status === 'Pending') && (
+                      <button 
+                        onClick={handleClaim}
+                        disabled={claimLoading}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                      >
+                        {claimLoading ? 'Claiming...' : 'Claim Vexation'}
+                      </button>
+                    )}
+                    
+                    {isClaimedByMe && (
+                      <button 
+                        onClick={handleSolve}
+                        disabled={solveLoading}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                      >
+                        {solveLoading ? 'Submitting...' : 'Submit Solution'}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
 
             {/* Footer: upvotes, comments, contact */}
             <div className="flex items-center gap-4 border-t border-slate-700/50 pt-4">
@@ -260,7 +357,7 @@ function VexationDetailPage() {
             )}
           </div>
 
-          {/* ── RIGHT COLUMN — AI Technical Insights (1/3 width) ── */}
+          {/* RIGHT COLUMN — AI Technical Insights (1/3 width) */}
           <div className="space-y-6">
             {/* AI Insights Card */}
             <div className="rounded-xl border border-slate-700/50 bg-slate-800/30 overflow-hidden">
@@ -360,7 +457,7 @@ function VexationDetailPage() {
   )
 }
 
-// ── Helper: relative time ──
+// Helper: relative time
 function formatTimeAgo(timestamp: any): string {
   if (!timestamp?.toDate) return ''
   const now = Date.now()

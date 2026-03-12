@@ -2,7 +2,8 @@ import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import {
   Menu, Bookmark, CirclePlus, FileText,
-  TrendingUp, Target, Settings, ChevronsLeft, ChevronsRight
+  TrendingUp, Target, Settings, ChevronsLeft, ChevronsRight,
+  LayoutGrid, Compass, Zap, Briefcase
 } from 'lucide-react'
 import { useAuth } from '../lib/auth/AuthContext'
 import { useSidebar } from '../lib/sidebar'
@@ -13,6 +14,7 @@ export default function Sidebar() {
   const { user, userProfile } = useAuth()
 
   const sidebarWidth = collapsed ? 'w-16' : 'w-[230px]'
+  const isSolver = userProfile?.role === 'Solver'
 
   return (
     <>
@@ -54,39 +56,60 @@ export default function Sidebar() {
         </div>
 
         {/* New Vexation CTA */}
-        <div className={collapsed ? 'px-2 pt-4 pb-3' : 'px-4 pt-4 pb-3'}>
-          <Link
-            to="/submit"
-            search={{ prefill: '' }}
-            onClick={() => setIsOpen(false)}
-            className={`flex items-center justify-center gap-2 w-full rounded-lg bg-vexed-accent3/70 hover:bg-vexed-accent3 px-4 py-2.5 text-sm font-semibold text-white transition-colors ${collapsed ? 'px-0!' : ''}`}
-            title={collapsed ? 'New Vexation' : ''}
-          >
-            <CirclePlus size={16} />
-            {!collapsed && 'New Vexation'}
-          </Link>
-        </div>
+        {!isSolver && (
+          <div className={collapsed ? 'px-2 pt-4 pb-3' : 'px-4 pt-4 pb-3'}>
+            <Link
+              to="/submit"
+              search={{ prefill: '' }}
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center justify-center gap-2 w-full rounded-lg bg-vexed-accent3/70 hover:bg-vexed-accent3 px-4 py-2.5 text-sm font-semibold text-white transition-colors ${collapsed ? 'px-0!' : ''}`}
+              title={collapsed ? 'New Vexation' : ''}
+            >
+              <CirclePlus size={16} />
+              {!collapsed && 'New Vexation'}
+            </Link>
+          </div>
+        )}
 
         {/* Navigation */}
-        <nav className="flex-1 px-2 pb-4 overflow-y-auto space-y-5">
-          <div className="space-y-1">
-            {!collapsed && (
-              <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                Personal
-              </p>
-            )}
-            <NavLink to="/my-vexations" icon={<FileText size={16} />} label="My Vexations" collapsed={collapsed} onClick={() => setIsOpen(false)} />
-            <NavLink to="/my/saved" icon={<Bookmark size={16} />} label="Saved" collapsed={collapsed} onClick={() => setIsOpen(false)} />
-          </div>
-          <div className="space-y-1">
-            {!collapsed && (
-              <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                Discover
-              </p>
-            )}
-            <NavLink to="/browse" icon={<TrendingUp size={16} />} label="Trending Problems" collapsed={collapsed} onClick={() => setIsOpen(false)} />
-            <NavLink to="/browse" icon={<Target size={16} />} label="Top Developers" collapsed={collapsed} onClick={() => setIsOpen(false)} />
-          </div>
+        <nav className="flex-1 px-2 mt-4 pb-4 overflow-y-auto space-y-5">
+          {isSolver ? (
+            /* Developer Tabs */
+            <div className="space-y-1">
+              {!collapsed && (
+                <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                  Workspace
+                </p>
+              )}
+              <NavLink to="/" icon={<LayoutGrid size={16} />} label="Dashboard" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+              <NavLink to="/browse" icon={<Compass size={16} />} label="Browse" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+              <NavLink to="/my/claimed" icon={<Zap size={16} />} label="My Claims" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+              <NavLink to="/portfolio" icon={<Briefcase size={16} />} label="Portfolio" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+              <NavLink to="/settings" icon={<Settings size={16} />} label="Settings" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+            </div>
+          ) : (
+            /* Poster (Default) Tabs */
+            <>
+              <div className="space-y-1">
+                {!collapsed && (
+                  <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    Personal
+                  </p>
+                )}
+                <NavLink to="/my-vexations" icon={<FileText size={16} />} label="My Vexations" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+                <NavLink to="/my/saved" icon={<Bookmark size={16} />} label="Saved" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+              </div>
+              <div className="space-y-1">
+                {!collapsed && (
+                  <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    Discover
+                  </p>
+                )}
+                <NavLink to="/browse" icon={<TrendingUp size={16} />} label="Trending Problems" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+                <NavLink to="/browse" icon={<Target size={16} />} label="Top Developers" collapsed={collapsed} onClick={() => setIsOpen(false)} />
+              </div>
+            </>
+          )}
         </nav>
 
         {/* Collapse toggle */}

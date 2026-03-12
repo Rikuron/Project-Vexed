@@ -28,6 +28,8 @@ function normalizeCase(value?: string) {
 // Collection References
 const vexationsRef = collection(db, 'vexations')
 
+/* Poster functions */
+
 // Create / POST
 export async function createVexation(
   formData: { title: string; description: string },
@@ -213,4 +215,52 @@ export async function incrementViewCount(vexationId: string): Promise<void> {
   await updateDoc(doc(db, 'vexations', vexationId), {
     viewCount: increment(1),
   })
+}
+
+
+
+
+/* Solver functions */
+
+// Claim a vexation / POST
+export async function claimVexation(vexationId: string, userId: string): Promise<void> {
+  await updateDoc(doc(db, 'vexations', vexationId), {
+    status: 'Claimed',
+    claimedByID: arrayUnion(userId),
+    updatedAt: serverTimestamp(),
+  })
+}
+
+// Submit a solution / POST
+export async function submitSolution(
+  vexationId: string, 
+  _userId: string,
+  solutionUrl: string
+): Promise<void> {
+  await updateDoc(doc(db, 'vexations', vexationId), {
+    status: 'Solved',
+    solutionUrl: arrayUnion(solutionUrl),
+    updatedAt: serverTimestamp()
+  })
+}
+
+// Get claimed vexations for a user / GET
+export async function getClaimedVexations(userId: string): Promise<Vexation[]> {
+  try {
+    const q = query(
+      vexationsRef,
+      where('claimedByID', 'array-contains', userId),
+      orderBy('createdAt', 'desc')
+    )
+    const snapshot = await getDocs(q)
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }) as Vexation)
+  } catch (error: any) {
+    console.error("Error fetching claimed vexations. Missing Index: ")
+    console.error(error.message)
+    return []
+  }
 }

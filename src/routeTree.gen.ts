@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SignInRouteImport } from './routes/signIn'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as MyVexationsRouteImport } from './routes/my-vexations'
 import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VexationIdRouteImport } from './routes/vexation/$id'
 import { Route as MySavedRouteImport } from './routes/my/saved'
+import { Route as MyClaimedRouteImport } from './routes/my/claimed'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
@@ -26,6 +28,11 @@ const SubmitRoute = SubmitRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/signIn',
   path: '/signIn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyVexationsRoute = MyVexationsRouteImport.update({
@@ -58,14 +65,21 @@ const MySavedRoute = MySavedRouteImport.update({
   path: '/my/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyClaimedRoute = MyClaimedRouteImport.update({
+  id: '/my/claimed',
+  path: '/my/claimed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/my-vexations': typeof MyVexationsRoute
+  '/portfolio': typeof PortfolioRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
+  '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
   '/vexation/$id': typeof VexationIdRoute
 }
@@ -74,8 +88,10 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/my-vexations': typeof MyVexationsRoute
+  '/portfolio': typeof PortfolioRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
+  '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
   '/vexation/$id': typeof VexationIdRoute
 }
@@ -85,8 +101,10 @@ export interface FileRoutesById {
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/my-vexations': typeof MyVexationsRoute
+  '/portfolio': typeof PortfolioRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
+  '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
   '/vexation/$id': typeof VexationIdRoute
 }
@@ -97,8 +115,10 @@ export interface FileRouteTypes {
     | '/browse'
     | '/complete-profile'
     | '/my-vexations'
+    | '/portfolio'
     | '/signIn'
     | '/submit'
+    | '/my/claimed'
     | '/my/saved'
     | '/vexation/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -107,8 +127,10 @@ export interface FileRouteTypes {
     | '/browse'
     | '/complete-profile'
     | '/my-vexations'
+    | '/portfolio'
     | '/signIn'
     | '/submit'
+    | '/my/claimed'
     | '/my/saved'
     | '/vexation/$id'
   id:
@@ -117,8 +139,10 @@ export interface FileRouteTypes {
     | '/browse'
     | '/complete-profile'
     | '/my-vexations'
+    | '/portfolio'
     | '/signIn'
     | '/submit'
+    | '/my/claimed'
     | '/my/saved'
     | '/vexation/$id'
   fileRoutesById: FileRoutesById
@@ -128,8 +152,10 @@ export interface RootRouteChildren {
   BrowseRoute: typeof BrowseRoute
   CompleteProfileRoute: typeof CompleteProfileRoute
   MyVexationsRoute: typeof MyVexationsRoute
+  PortfolioRoute: typeof PortfolioRoute
   SignInRoute: typeof SignInRoute
   SubmitRoute: typeof SubmitRoute
+  MyClaimedRoute: typeof MyClaimedRoute
   MySavedRoute: typeof MySavedRoute
   VexationIdRoute: typeof VexationIdRoute
 }
@@ -148,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/signIn'
       fullPath: '/signIn'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/my-vexations': {
@@ -192,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MySavedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my/claimed': {
+      id: '/my/claimed'
+      path: '/my/claimed'
+      fullPath: '/my/claimed'
+      preLoaderRoute: typeof MyClaimedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -200,8 +240,10 @@ const rootRouteChildren: RootRouteChildren = {
   BrowseRoute: BrowseRoute,
   CompleteProfileRoute: CompleteProfileRoute,
   MyVexationsRoute: MyVexationsRoute,
+  PortfolioRoute: PortfolioRoute,
   SignInRoute: SignInRoute,
   SubmitRoute: SubmitRoute,
+  MyClaimedRoute: MyClaimedRoute,
   MySavedRoute: MySavedRoute,
   VexationIdRoute: VexationIdRoute,
 }
