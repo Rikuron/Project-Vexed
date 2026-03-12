@@ -7,7 +7,13 @@ import PortfolioShowcase from './cards/PortfolioShowcase'
 
 export default function DeveloperDashboard() {
   return (
-    <div className="min-h-screen bg-[#0D0C15] text-white p-6 lg:p-10 font-sans">
+    <div className="min-h-screen bg-[#0D0C15] text-white p-6 lg:p-10 font-sans overflow-hidden relative">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[7.5%] left-[12.5%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
+        <div className="absolute bottom-[5%] right-[7.5%] translate-x-1/4 translate-y-1/4 w-[650px] h-[650px] rounded-full bg-vexed-highlight1/15 blur-[150px]" />
+      </div>
+
+
       <div className="max-w-[1400px] mx-auto">
 
         {/* Header */}

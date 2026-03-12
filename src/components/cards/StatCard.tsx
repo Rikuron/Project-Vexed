@@ -17,6 +17,8 @@ export default function StatCard({ label, value, changePercent, icon, variant = 
         ? 'bg-linear-to-br from-[#1E1145] to-[#151320] border border-[#553CFF]/30'
         : 'bg-[#151320] border border-white/5'
     }`}>
+      {/* Background Overlay */}
+
       {/* Top row: label + icon */}
       <div className="flex items-center justify-between mb-4">
         <p className={`text-xs font-bold tracking-wider uppercase ${isAccent ? 'text-indigo-300' : 'text-slate-500'}`}>
