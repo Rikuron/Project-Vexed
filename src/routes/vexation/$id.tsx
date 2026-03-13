@@ -295,11 +295,11 @@ function VexationDetailPage() {
                 
                 {vexation.status !== 'Solved' && (
                   <div>
-                    {!isClaimedByMe && (vexation.status === 'Analyzed' || vexation.status === 'Pending') && (
+                    {!isClaimedByMe && ['analyzed', 'pending'].includes(vexation.status.toLowerCase()) && (
                       <button 
                         onClick={handleClaim}
                         disabled={claimLoading}
-                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                        className="bg-indigo-600 hover:bg-indigo-500 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                       >
                         {claimLoading ? 'Claiming...' : 'Claim Vexation'}
                       </button>
@@ -309,7 +309,7 @@ function VexationDetailPage() {
                       <button 
                         onClick={handleSolve}
                         disabled={solveLoading}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                        className="bg-emerald-600 cursor-pointer hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                       >
                         {solveLoading ? 'Submitting...' : 'Submit Solution'}
                       </button>
@@ -327,8 +327,8 @@ function VexationDetailPage() {
                 disabled={!user || voteLoading}
                 className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   hasVoted
-                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
-                    : 'bg-slate-800 text-gray-400 border border-slate-700 hover:text-white hover:border-slate-600'
+                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 cursor-pointer'
+                    : 'bg-slate-800 text-gray-400 border border-slate-700 hover:text-white hover:border-slate-600 cursor-pointer'
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
                 title={!user ? 'Sign in to upvote' : ''}
               >

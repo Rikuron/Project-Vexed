@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
 import { 
-  Search, Plus, ArrowRight, Zap, Target, Bookmark, 
+  Search, Plus, Zap, Target, Bookmark, 
   CheckCircle2, Trophy 
 } from 'lucide-react'
 import { useAuth } from '../../lib/auth/AuthContext'
 import { getClaimedVexations, getSavedVexations } from '../../lib/db'
 import type { Vexation } from '../../types'
+import ClaimCard from '../../components/cards/ClaimCard'
 
 export const Route = createFileRoute('/my/claimed')({
   component: ClaimedVexationsPage,
@@ -76,15 +77,7 @@ function ClaimedVexationsPage() {
 
         return b.createdAt.toMillis() - a.createdAt.toMillis()
       })
-  }, [claimedVexations, bookmarkedVexations, searchQuery, sortBy])
-
-  // Simple relative date formatting for cards
-  const formatTimeAgo = (timestamp: any) => {
-    if (!timestamp?.toDate) return 'Just now'
-    const diffHrs = Math.floor((Date.now() - timestamp.toDate().getTime()) / 3600000)
-    if (diffHrs < 24) return `Updated ${diffHrs}h ago`
-    return `Updated ${Math.floor(diffHrs/24)}d ago`
-  }
+  }, [claimedVexations, bookmarkedVexations, searchQuery, sortBy, activeTab])
 
   // Security layer check
   if (!user || userProfile?.role !== 'Solver') {
@@ -176,52 +169,14 @@ function ClaimedVexationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSorted.map((vex) => (
               <Link
+                key={vex.id}
                 to='/vexation/$id'
                 params={{ id: vex.id }}
               >
-                <div className="bg-[#0D0C15] border border-white/5 hover:border-white/10 transition-colors rounded-xl p-6 flex flex-col group">
-                  {/* Top row: Status and Time */}
-                  <div className="flex items-center justify-between mb-4 mt-1">
-                    <div className={`flex items-center gap-2 text-[10px] font-bold tracking-widest ${activeTab === 'Claimed' ? 'text-[#D4B853]' : 'text-emerald-400'}`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${activeTab === 'Claimed' ? 'bg-[#D4B853]' : 'bg-emerald-400'}`}></div>
-                      {activeTab === 'Claimed' ? 'IN PROGRESS' : 'SAVED'}
-                    </div>
-                    <span className="text-[11px] font-medium text-slate-500">{formatTimeAgo(vex.updatedAt || vex.createdAt)}</span>
-                  </div>
-
-                  {/* Title and Description */}
-                  <h3 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-indigo-200 transition-colors line-clamp-2">
-                    {vex.title}
-                  </h3>
-                  <p className="text-[13px] text-slate-400 mb-6 flex-1 line-clamp-3 leading-relaxed pr-4">
-                    {vex.description}
-                  </p>
-
-                  {/* Progress Bar Mocked */}
-                  <div className="w-full bg-[#2A263D] h-1 mb-5 relative overflow-hidden rounded-full">
-                    <div className="bg-[#553CFF] h-full w-[45%] rounded-full"></div>
-                  </div>
-
-                  {/* Bottom row: Tags and Button */}
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="border border-white/10 px-2.5 py-1 rounded text-[9px] font-bold text-slate-400 tracking-widest uppercase">
-                        {vex.sector}
-                      </span>
-                      <span className="border border-white/10 px-2.5 py-1 rounded text-[9px] font-bold text-slate-400 tracking-widest uppercase">
-                        {vex.severity}
-                      </span>
-                    </div>
-                    <Link 
-                      to={`/vexation/$id`}
-                      params={{ id: vex.id }}
-                      className="bg-[#553CFF] hover:bg-[#4A34DF] text-white px-4 py-1.5 rounded-lg text-[13px] font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(85,60,255,0.2)] hover:shadow-[0_0_20px_rgba(85,60,255,0.4)]"
-                    >
-                      View <ArrowRight size={14} />
-                    </Link>
-                  </div>
-
-                </div>
+                <ClaimCard
+                  vexation={vex}
+                  variant={activeTab === 'Claimed' ? 'claimed' : 'bookmarked'}
+                />
               </Link>
             ))}
           </div>
