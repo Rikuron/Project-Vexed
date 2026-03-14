@@ -115,7 +115,7 @@ function PortfolioPage() {
                </div>
             </div>
 
-            <div className="bg-linear-to-r from-[#151320] to-transparent border border-white/5 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-colors opacity-70">
+            <div className="bg-linear-to-r from-[#151320] to-transparent border border-white/5 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-colors">
                <div className="max-w-2xl">
                  <div className="flex items-center gap-3 mb-1.5">
                    <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">Implementing Zero-Knowledge Proofs for User Identity</h3>
@@ -129,6 +129,27 @@ function PortfolioPage() {
                  </div>
                  <div className="flex items-center gap-2">
                    <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Cryptography</span>
+                   <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Solidity</span>
+                 </div>
+                 <ChevronRight className="text-slate-600 group-hover:text-white transition-colors" size={20} />
+               </div>
+            </div>
+
+            <div className="bg-linear-to-r from-[#151320] to-transparent border border-white/5 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-colors">
+               <div className="max-w-2xl">
+                 <div className="flex items-center gap-3 mb-1.5">
+                   <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">Race Condition in Distributed Order Book</h3>
+                   <span className="px-2.5 py-0.5 bg-slate-800 rounded font-bold text-[10px] text-slate-300 border border-white/5">RESOLVED</span>
+                 </div>
+                 <p className="text-sm text-slate-400 line-clamp-1">Fixed critical race condition in concurrent order matching using lock-free data structures and CAS operations.</p>
+               </div>
+               <div className="flex items-center gap-6 mt-4 md:mt-0">
+                 <div className="text-right flex items-center gap-1.5 font-bold text-[#553CFF] bg-[#553CFF]/10 px-3 py-1 rounded-md">
+                   <span className="font-serif text-[10px]">₿</span> 0.75 BTC
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">C++</span>
+                   <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Distributed Systems</span>
                  </div>
                  <ChevronRight className="text-slate-600 group-hover:text-white transition-colors" size={20} />
                </div>
