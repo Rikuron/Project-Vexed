@@ -1,17 +1,18 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import {
-  Menu, Bookmark, CirclePlus, FileText,
-  TrendingUp, Target, Settings, ChevronsLeft, ChevronsRight,
-  LayoutGrid, Compass, Zap, Briefcase
+  Menu, Bookmark, CirclePlus, FileText, TrendingUp, 
+  Settings, ChevronsLeft, ChevronsRight, LayoutGrid, 
+  Compass, Zap, Briefcase, LogOut, UserCog 
 } from 'lucide-react'
 import { useAuth } from '../lib/auth/AuthContext'
 import { useSidebar } from '../lib/sidebar'
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)   // mobile slide-in
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const { collapsed, toggle } = useSidebar()    // desktop collapse
-  const { user, userProfile } = useAuth()
+  const { user, userProfile, signOut } = useAuth()
 
   const sidebarWidth = collapsed ? 'w-16' : 'w-[230px]'
   const isSolver = userProfile?.role === 'Solver'
@@ -85,7 +86,6 @@ export default function Sidebar() {
               <NavLink to="/browse" icon={<Compass size={16} />} label="Browse" collapsed={collapsed} onClick={() => setIsOpen(false)} />
               <NavLink to="/my/claimed" icon={<Zap size={16} />} label="My Claims" collapsed={collapsed} onClick={() => setIsOpen(false)} />
               <NavLink to="/portfolio" icon={<Briefcase size={16} />} label="Portfolio" collapsed={collapsed} onClick={() => setIsOpen(false)} />
-              <NavLink to="/settings" icon={<Settings size={16} />} label="Settings" collapsed={collapsed} onClick={() => setIsOpen(false)} />
             </div>
           ) : (
             /* Poster (Default) Tabs */
@@ -106,7 +106,6 @@ export default function Sidebar() {
                   </p>
                 )}
                 <NavLink to="/browse" icon={<TrendingUp size={16} />} label="Trending Problems" collapsed={collapsed} onClick={() => setIsOpen(false)} />
-                <NavLink to="/browse" icon={<Target size={16} />} label="Top Developers" collapsed={collapsed} onClick={() => setIsOpen(false)} />
               </div>
             </>
           )}
@@ -122,7 +121,7 @@ export default function Sidebar() {
         </button>
 
         {/* User info */}
-        {user && (
+        {user ? (
           <div className={`p-4 border-t border-slate-800 flex items-center ${collapsed ? 'justify-center' : 'justify-between'} gap-3`}>
             {collapsed ? (
               /* Collapsed: avatar only */
@@ -149,11 +148,54 @@ export default function Sidebar() {
                     <p className="text-xs text-gray-500 truncate">{userProfile?.role ?? 'Poster'}</p>
                   </div>
                 </div>
-                <button className="p-1.5 text-gray-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors shrink-0" aria-label="Settings">
-                  <Settings size={16} />
-                </button>
+
+                <div className="relative">
+                  <button 
+                    onClick={() => setSettingsOpen(!settingsOpen)}
+                    className="p-1.5 text-gray-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors shrink-0 cursor-pointer" 
+                    aria-label="Settings"
+                  >
+                    <Settings size={16} />
+                  </button>
+
+                  {/* Settings popover */}
+                  {settingsOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setSettingsOpen(false)} />
+                      <div className="absolute bottom-full right-0 mb-2 w-48 bg-[#1A1825] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                        <button
+                          disabled
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
+                        >
+                          <UserCog size={14} /> User Settings
+                        </button>
+                        <div className="border-t border-white/5" />
+                        <button
+                          onClick={() => {
+                            setSettingsOpen(false)
+                            signOut()
+                          }}
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        >
+                          <LogOut size={14} /> Sign Out
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </>
             )}
+          </div>
+        ) : (
+          <div className={`p-4 border-t border-slate-800 ${collapsed ? 'flex justify-center' : ''}`}>
+            <Link
+              to="/signIn"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center justify-center gap-2 w-full rounded-lg bg-vexed-primary/10 border border-vexed-primary/20 px-4 py-2.5 text-sm font-bold text-vexed-primary hover:bg-vexed-primary/20 transition-colors ${collapsed ? 'px-2!' : ''}`}
+              title={collapsed ? 'Sign In' : ''}
+            >
+              {collapsed ? <LogOut size={16} className="rotate-180" /> : 'Sign In'}
+            </Link>
           </div>
         )}
       </aside>
