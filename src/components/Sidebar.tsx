@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useState, useRef, useEffect } from 'react'
 import {
   Menu, Bookmark, CirclePlus, FileText, TrendingUp, 
   Settings, ChevronsLeft, ChevronsRight, LayoutGrid, 
@@ -13,6 +13,19 @@ export default function Sidebar() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const { collapsed, toggle } = useSidebar()    // desktop collapse
   const { user, userProfile, signOut } = useAuth()
+
+  const settingsRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) setSettingsOpen(false)
+    }
+
+    if (settingsOpen) document.addEventListener('mousedown', handleClickOutside)
+
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [settingsOpen])
 
   const sidebarWidth = collapsed ? 'w-16' : 'w-[230px]'
   const isSolver = userProfile?.role === 'Solver'
@@ -149,7 +162,7 @@ export default function Sidebar() {
                   </div>
                 </div>
 
-                <div className="relative">
+                <div className="relative" ref={settingsRef}>
                   <button 
                     onClick={() => setSettingsOpen(!settingsOpen)}
                     className="p-1.5 text-gray-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors shrink-0 cursor-pointer" 
@@ -160,27 +173,25 @@ export default function Sidebar() {
 
                   {/* Settings popover */}
                   {settingsOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setSettingsOpen(false)} />
-                      <div className="absolute bottom-full right-0 mb-2 w-48 bg-[#1A1825] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
-                        <button
-                          disabled
-                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
-                        >
-                          <UserCog size={14} /> User Settings
-                        </button>
-                        <div className="border-t border-white/5" />
-                        <button
-                          onClick={() => {
-                            setSettingsOpen(false)
-                            signOut()
-                          }}
-                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                        >
-                          <LogOut size={14} /> Sign Out
-                        </button>
-                      </div>
-                    </>
+                    <div className="absolute bottom-full right-0 mb-2 w-48 bg-[#1A1825] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                      <button
+                        disabled
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
+                      >
+                        <UserCog size={14} /> User Settings
+                      </button>
+                      <div className="border-t border-white/5" />
+                      <button
+                        onClick={async () => {
+                          setSettingsOpen(false)
+                          await signOut()
+                          navigate({ to: '/signIn' })
+                        }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                      >
+                        <LogOut size={14} /> Sign Out
+                      </button>
+                    </div>
                   )}
                 </div>
               </>

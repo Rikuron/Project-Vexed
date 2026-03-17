@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowBigUp, Bookmark, Share2, MessageSquare, Loader2, Shield, Cpu, AlertTriangle, } from 'lucide-react'
+import { ArrowBigUp, Bookmark, Share2, MessageSquare, Loader2 } from 'lucide-react'
 import { 
   getVexationById,
   upvoteVexation,
@@ -12,18 +12,15 @@ import {
 } from '../../lib/db'
 import { useAuth } from '../../lib/auth/AuthContext'
 import type { Vexation } from '../../types'
+import ClaimedSolversCard from '../../components/cards/ClaimedSolversCard'
+import { formatTimeAgo } from '../../lib/utils/formatTimeAgo'
+import { SEVERITY_STYLES } from '../../lib/constants/severityStyles'
+import AIInsightsCard from '../../components/cards/AIInsightCard'
+import DeveloperActionsBar from '../../components/cards/DeveloperActionsBar'
 
 export const Route = createFileRoute('/vexation/$id')({
   component: VexationDetailPage,
 })
-
-// Severity badge styling
-const SEVERITY_STYLES: Record<string, string> = {
-  low: 'bg-emerald-500/20 text-emerald-400',
-  medium: 'bg-yellow-500/20 text-yellow-400',
-  high: 'bg-orange-500/20 text-orange-400',
-  critical: 'bg-red-500/20 text-red-400',
-}
 
 function VexationDetailPage() {
   const { id } = Route.useParams()
@@ -35,6 +32,7 @@ function VexationDetailPage() {
   const [isSaved, setIsSaved] = useState(false)
   const [voteLoading, setVoteLoading] = useState(false)
   const [localUpvotes, setLocalUpvotes] = useState(0)
+  const [localSaveCount, setLocalSaveCount] = useState(0)
   const [shareTooltip, setShareTooltip] = useState(false)
   const [claimLoading, setClaimLoading] = useState(false)
   const [solveLoading, setSolveLoading] = useState(false)
@@ -49,6 +47,7 @@ function VexationDetailPage() {
         if (data) {
           setVexation(data)
           setLocalUpvotes(data.upvotes)
+          setLocalSaveCount(data.savedBy.length)
           setIsSaved(user ? data.savedBy.includes(user.uid) : false)
 
           // Increment view count (fire and forget)
@@ -94,6 +93,7 @@ function VexationDetailPage() {
     try {
       await toggleSaveVexation(id, user.uid, isSaved)
       setIsSaved(!isSaved)
+      setLocalSaveCount((prev) => (isSaved ? prev - 1 : prev + 1))
     } catch (err) {
       console.error('Save failed:', err)
     }
@@ -186,15 +186,7 @@ function VexationDetailPage() {
 
   const isSolver = userProfile?.role === 'Solver'
   const isClaimedByMe = user && vexation?.claimedByID?.includes(user.uid)
-
-  const severityStyle = SEVERITY_STYLES[vexation.severity] || SEVERITY_STYLES.low
-  // Complexity score visual (map to number for the visual)
-  const complexityScore =
-    vexation.technicalComplexity === 'Advanced'
-      ? 8.5
-      : vexation.technicalComplexity === 'Intermediate'
-        ? 5.5
-        : 3.0
+  const isOwnPost = user?.uid === vexation?.authorId
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -215,7 +207,7 @@ function VexationDetailPage() {
             <div className="relative">
               <button
                 onClick={handleShare}
-                className="p-2 rounded-lg border border-slate-700 text-gray-400 hover:text-white hover:border-slate-600 transition-colors"
+                className="p-2 rounded-lg border border-slate-700 text-gray-400 hover:text-white cursor-pointer hover:border-slate-600 transition-colors"
                 aria-label="Share"
               >
                 <Share2 size={18} />
@@ -231,15 +223,16 @@ function VexationDetailPage() {
             <button
               onClick={handleSave}
               disabled={!user}
-              className={`p-2 rounded-lg border transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-colors ${
                 isSaved
                   ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400'
-                  : 'border-slate-700 text-gray-400 hover:text-white hover:border-slate-600'
+                  : 'border-slate-700 text-gray-400 hover:text-white cursor-pointer hover:border-slate-600'
               } disabled:opacity-40 disabled:cursor-not-allowed`}
               aria-label={isSaved ? 'Remove bookmark' : 'Bookmark'}
               title={!user ? 'Sign in to bookmark' : ''}
             >
               <Bookmark size={18} fill={isSaved ? 'currentColor' : 'none'} />
+              <span className="text-sm font-medium">{localSaveCount}</span>
             </button>
           </div>
         </div>
@@ -253,7 +246,7 @@ function VexationDetailPage() {
               <span className="rounded-md bg-indigo-600/20 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-indigo-400">
                 {vexation.sector}
               </span>
-              <span className={`rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${severityStyle}`}>
+              <span className={`rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${SEVERITY_STYLES[vexation.severity.toLowerCase()]}`}>
                 {vexation.severity} impact
               </span>
               <span className="text-xs text-gray-500">
@@ -281,42 +274,14 @@ function VexationDetailPage() {
 
             {/* Developer Actions */}
             {isSolver && vexation && (
-              <div className="flex bg-slate-800/50 rounded-lg p-4 mb-4 border border-indigo-500/20 items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-semibold text-white">Developer Actions</h3>
-                  <p className="text-xs text-gray-400">
-                    {vexation.status === 'Solved' 
-                      ? 'This vexation has been solved!'
-                      : isClaimedByMe 
-                        ? 'You have claimed this task. Ready to submit?' 
-                        : 'Take ownership and start building a solution.'}
-                  </p>
-                </div>
-                
-                {vexation.status !== 'Solved' && (
-                  <div>
-                    {!isClaimedByMe && ['analyzed', 'pending'].includes(vexation.status.toLowerCase()) && (
-                      <button 
-                        onClick={handleClaim}
-                        disabled={claimLoading}
-                        className="bg-indigo-600 hover:bg-indigo-500 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-                      >
-                        {claimLoading ? 'Claiming...' : 'Claim Vexation'}
-                      </button>
-                    )}
-                    
-                    {isClaimedByMe && (
-                      <button 
-                        onClick={handleSolve}
-                        disabled={solveLoading}
-                        className="bg-emerald-600 cursor-pointer hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-                      >
-                        {solveLoading ? 'Submitting...' : 'Submit Solution'}
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+              <DeveloperActionsBar
+                status={vexation.status}
+                isClaimedByMe={!!isClaimedByMe}
+                claimLoading={claimLoading}
+                solveLoading={solveLoading}
+                onClaim={handleClaim}
+                onSolve={handleSolve}
+              />
             )}
 
 
@@ -324,13 +289,13 @@ function VexationDetailPage() {
             <div className="flex items-center gap-4 border-t border-slate-700/50 pt-4">
               <button
                 onClick={handleUpvote}
-                disabled={!user || voteLoading}
+                disabled={!user || voteLoading || isOwnPost}
                 className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   hasVoted
                     ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 cursor-pointer'
                     : 'bg-slate-800 text-gray-400 border border-slate-700 hover:text-white hover:border-slate-600 cursor-pointer'
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
-                title={!user ? 'Sign in to upvote' : ''}
+                title={!user ? 'Sign in to upvote' : isOwnPost ? "You can't upvote your own vexation" : ''}
               >
                 <ArrowBigUp size={16} fill={hasVoted ? 'currentColor' : 'none'} />
                 {localUpvotes}
@@ -360,86 +325,11 @@ function VexationDetailPage() {
           {/* RIGHT COLUMN — AI Technical Insights (1/3 width) */}
           <div className="space-y-6">
             {/* AI Insights Card */}
-            <div className="rounded-xl border border-slate-700/50 bg-slate-800/30 overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center gap-2 px-5 py-4 bg-slate-800/50 border-b border-slate-700/50">
-                <Shield size={18} className="text-indigo-400" />
-                <span className="text-sm font-semibold text-white">
-                  AI Technical Insights
-                </span>
-              </div>
-
-              <div className="p-5 space-y-5">
-                {/* Complexity Score */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-gray-500 uppercase tracking-wider">
-                      Complexity Score
-                    </span>
-                    <span className="text-2xl font-bold text-white">
-                      {complexityScore}
-                      <span className="text-sm font-normal text-gray-500">
-                        /10
-                      </span>
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-slate-700 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-indigo-500 transition-all"
-                      style={{ width: `${complexityScore * 10}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {vexation.technicalComplexity.charAt(0).toUpperCase() +
-                      vexation.technicalComplexity.slice(1)}{' '}
-                    level difficulty
-                  </p>
-                </div>
-
-                {/* Suggested Tech Stack */}
-                {vexation.suggestedTechStack.length > 0 && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
-                      Suggested Tech Stack
-                    </h4>
-                    <div className="space-y-2">
-                      {vexation.suggestedTechStack.map((tech) => (
-                        <div
-                          key={tech}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <Cpu size={14} className="text-gray-500 shrink-0" />
-                          <span className="text-gray-300">{tech}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Key Challenges */}
-                {vexation.keyChallenges.length > 0 && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
-                      Key Challenges
-                    </h4>
-                    <ul className="space-y-2">
-                      {vexation.keyChallenges.map((challenge, i) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-2 text-sm text-gray-400"
-                        >
-                          <AlertTriangle
-                            size={14}
-                            className="text-amber-500 shrink-0 mt-0.5"
-                          />
-                          <span>{challenge}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
+            <AIInsightsCard
+              technicalComplexity={vexation.technicalComplexity}
+              suggestedTechStack={vexation.suggestedTechStack}
+              keyChallenges={vexation.keyChallenges}
+            />
 
             {/* AI Summary Card */}
             <div className="rounded-xl border border-slate-700/50 bg-slate-800/30 p-5">
@@ -450,24 +340,14 @@ function VexationDetailPage() {
                 {vexation.summary}
               </p>
             </div>
+
+            {/* Claimed Solvers Card */}
+            {vexation.claimedByID && vexation.claimedByID.length > 0 && (
+              <ClaimedSolversCard claimedByIDs={vexation.claimedByID} />
+            )}
           </div>
         </div>
       </div>
     </div>
   )
-}
-
-// Helper: relative time
-function formatTimeAgo(timestamp: any): string {
-  if (!timestamp?.toDate) return ''
-  const now = Date.now()
-  const then = timestamp.toDate().getTime()
-  const diffMs = now - then
-  const diffMins = Math.floor(diffMs / 60_000)
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  const diffHours = Math.floor(diffMins / 60)
-  if (diffHours < 24) return `${diffHours}h ago`
-  const diffDays = Math.floor(diffHours / 24)
-  return `${diffDays}d ago`
 }
