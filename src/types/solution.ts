@@ -12,4 +12,5 @@ export interface Solution {
   dateStarted: Timestamp
   dateSubmitted: Timestamp
   techStack?: string[]
+  upvotes?: number
 }

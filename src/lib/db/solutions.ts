@@ -7,7 +7,10 @@ import {
   query,
   where,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  updateDoc,
+  increment,
+  deleteDoc
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import type { Solution } from '../../types'
@@ -96,4 +99,39 @@ export async function getSolutionsForVexation(vexationId: string): Promise<Solut
     console.error('Error fetching vexation solutions:', error)
     return []
   }
+}
+
+// Upvote
+export async function upvoteSolution(
+  solutionId: string,
+  userId: string
+): Promise<boolean> {
+  const voteRef = doc(db, 'solutions', solutionId, 'votes', userId)
+  const voteSnap = await getDoc(voteRef)
+
+  if (voteSnap.exists()) {
+    await deleteDoc(voteRef)
+    await updateDoc(doc(db, 'solutions', solutionId), {
+      upvotes: increment(-1)
+    })
+    return false
+  }
+
+  const { setDoc, serverTimestamp: ts } = await import('firebase/firestore')
+  await setDoc(voteRef, { createdAt: ts() })
+  await updateDoc(doc(db, 'solutions', solutionId), {
+    upvotes: increment(1)
+  })
+
+  return true
+}
+
+// Check if user has upvoted solution
+export async function hasUserUpvotedSolution(
+  solutionId: string,
+  userId: string
+): Promise<boolean> {
+  const voteRef = doc(db, 'solutions', solutionId, 'votes', userId)
+  const voteSnap = await getDoc(voteRef)
+  return voteSnap.exists()
 }

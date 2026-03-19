@@ -16,6 +16,8 @@ export default function DeveloperDashboard() {
   const [completedSolutions, setCompletedSolutions] = useState<Solution[]>([])
   const [loading, setLoading] = useState(true)
 
+  const totalUpvotes = completedSolutions.reduce((sum, solution) => sum + (solution.upvotes || 0), 0)
+
   useEffect(() => {
     async function fetchData() {
       if (!user?.uid) return
@@ -60,9 +62,25 @@ export default function DeveloperDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          <StatCard label="Solved Problems" value={loading ? "..." : completedSolutions.length.toString()} changePercent="Up to date" icon={<CheckCircle size={20} />} />
-          <StatCard label="Upvotes Received" value="1.2k" changePercent="Static" icon={<ThumbsUp size={20} />} />
-          <StatCard label="Current Streak" value="15 Days" changePercent="Static" icon={<Flame size={20} />} variant="accent" />
+          <StatCard 
+            label="Solved Problems" 
+            value={loading ? "..." : completedSolutions.length.toString()} 
+            changePercent="Up to date" 
+            icon={<CheckCircle size={20} />} /
+          >
+          <StatCard 
+            label="Upvotes Received" 
+            value={loading ? "..." : totalUpvotes.toString()}
+            changePercent="Static" 
+            icon={<ThumbsUp size={20} />} 
+          />
+          <StatCard 
+            label="Current Streak" 
+            value="15 Days" 
+            changePercent="Static" 
+            icon={<Flame size={20} />} 
+            variant="accent" 
+          />
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 mb-10">

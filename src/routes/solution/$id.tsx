@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { getSolutionById, getVexationById } from '../../lib/db'
+import { getSolutionById, getVexationById, upvoteSolution, hasUserUpvotedSolution } from '../../lib/db'
 import type { Solution, Vexation } from '../../types'
-import { Loader2, ArrowLeft, Github, ExternalLink, Calendar, User, Target } from 'lucide-react'
+import { useAuth } from '../../lib/auth/AuthContext'
+import { Loader2, ArrowLeft, Github, ExternalLink, Calendar, User, Target, ArrowBigUp } from 'lucide-react'
 
 export const Route = createFileRoute('/solution/$id')({
   component: SolutionDetailPage,
@@ -19,9 +20,16 @@ function formatDate(timestamp: any): string {
 
 function SolutionDetailPage() {
   const { id } = Route.useParams()
+  const { user } = useAuth()
+  
   const [solution, setSolution] = useState<Solution | null>(null)
   const [vexation, setVexation] = useState<Vexation | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Tracking upvotes
+  const [upvotes, setUpvotes] = useState(0)
+  const [hasUpvoted, setHasUpvoted] = useState(false)
+  const [isVoting, setIsVoting] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -29,6 +37,15 @@ function SolutionDetailPage() {
       .then(sol => {
         if (sol) {
           setSolution(sol)
+          setUpvotes(sol.upvotes || 0) // Initialize upvotes with DB property
+
+          // If the user is logged in, check if they have already liked it
+          if (user?.uid) {
+            hasUserUpvotedSolution(id, user.uid)
+              .then(setHasUpvoted)
+              .catch(console.error)
+          }
+
           return getVexationById(sol.vexationId)
         }
         return null
@@ -36,7 +53,31 @@ function SolutionDetailPage() {
       .then(vex => setVexation(vex))
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [id])
+  }, [id, user?.uid])
+
+  const handleUpvote = async () => {
+    // Prevent if not signed in, is solver, or an active process is ongoing
+    if (!user || user.uid === solution?.solverId || isVoting || !solution) return
+    
+    setIsVoting(true)
+    const previouslyUpvoted = hasUpvoted
+    
+    // Optimsitic UI changes (appear instant to user)
+    setHasUpvoted(!previouslyUpvoted)
+    setUpvotes(prev => previouslyUpvoted ? Math.max(0, prev - 1) : prev + 1)
+
+    try {
+      const voteStatus = await upvoteSolution(solution.id, user.uid)
+      setHasUpvoted(voteStatus)
+    } catch (error) {
+      console.error('Error upvoting solution:', error)
+      // Revert UI on failure
+      setHasUpvoted(previouslyUpvoted)
+      setUpvotes(prev => previouslyUpvoted ? prev + 1 : Math.max(0, prev - 1))
+    } finally {
+      setIsVoting(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -63,10 +104,36 @@ function SolutionDetailPage() {
         <ArrowLeft size={16} /> Back to Portfolio
       </Link>
 
-      {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-4">{solution.title}</h1>
-        <p className="text-lg text-vexed-dim leading-relaxed">{solution.description}</p>
+      {/* Header featuring Upvote Button */}
+      <div className="mb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div>
+          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-4">{solution.title}</h1>
+          <p className="text-lg text-vexed-dim leading-relaxed">{solution.description}</p>
+        </div>
+
+        <div className="shrink-0 flex flex-col md:items-end gap-2">
+          <button
+            onClick={handleUpvote}
+            disabled={isVoting || user?.uid === solution.solverId || !user}
+            className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all w-full md:w-auto ${
+              hasUpvoted 
+                ? 'bg-vexed-highlight1 text-white shadow-[0_0_15px_rgba(85,60,255,0.4)]' 
+                : 'bg-vexed-bg1 text-slate-300 border border-vexed-accent2 hover:bg-white/5'
+            } ${
+              (!user || user?.uid === solution.solverId) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+            }`}
+            title={!user ? "Sign in to upvote" : user.uid === solution.solverId ? "You cannot upvote your own solution" : ""}
+          >
+            <ArrowBigUp size={20} className={hasUpvoted ? 'fill-white' : ''} />
+            {upvotes} {upvotes === 1 ? 'Upvote' : 'Upvotes'}
+          </button>
+          
+          {user?.uid === solution.solverId && (
+            <p className="text-xs text-vexed-dim font-medium text-center md:text-right">
+              You cannot upvote your own solution.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Metadata Grid */}
