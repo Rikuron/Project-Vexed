@@ -1,11 +1,40 @@
+import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { CheckCircle, ThumbsUp, Flame, Bell, CirclePlus } from 'lucide-react'
 import StatCard from './cards/StatCard'
 import ActivityFeed from './cards/ActivityFeed'
 import ActiveProjectsTable from './cards/ActiveProjectsTable'
 import PortfolioShowcase from './cards/PortfolioShowcase'
+import { useAuth } from '../lib/auth/AuthContext'
+import { getClaimedVexations } from '../lib/db/vexations'
+import { getSolutionsBySolver } from '../lib/db/solutions'
+import type { Vexation, Solution } from '../types'
 
 export default function DeveloperDashboard() {
+  const { user } = useAuth()
+  const [claimedVexations, setClaimedVexations] = useState<Vexation[]>([])
+  const [completedSolutions, setCompletedSolutions] = useState<Solution[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!user?.uid) return
+      try {
+        const [vexations, solutions] = await Promise.all([
+          getClaimedVexations(user.uid),
+          getSolutionsBySolver(user.uid)
+        ])
+        setClaimedVexations(vexations)
+        setCompletedSolutions(solutions)
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [user])
+
   return (
     <div className="min-h-screen bg-[#0D0C15] text-white p-6 lg:p-10 font-sans overflow-hidden relative">
       <div className="absolute inset-0 pointer-events-none">
@@ -13,10 +42,7 @@ export default function DeveloperDashboard() {
         <div className="absolute bottom-[5%] right-[7.5%] translate-x-1/4 translate-y-1/4 w-[650px] h-[650px] rounded-full bg-vexed-highlight1/15 blur-[150px]" />
       </div>
 
-
       <div className="max-w-[1400px] mx-auto">
-
-        {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-2xl font-extrabold tracking-tight">Developer Dashboard</h1>
           <div className="flex items-center gap-4">
@@ -33,25 +59,21 @@ export default function DeveloperDashboard() {
           </div>
         </div>
 
-        {/* Stat Cards — full width */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          <StatCard label="Solved Problems" value="124" changePercent="+12%" icon={<CheckCircle size={20} />} />
-          <StatCard label="Upvotes Received" value="1.2k" changePercent="+5%" icon={<ThumbsUp size={20} />} />
-          <StatCard label="Current Streak" value="15 Days" changePercent="+2%" icon={<Flame size={20} />} variant="accent" />
+          <StatCard label="Solved Problems" value={loading ? "..." : completedSolutions.length.toString()} changePercent="Up to date" icon={<CheckCircle size={20} />} />
+          <StatCard label="Upvotes Received" value="1.2k" changePercent="Static" icon={<ThumbsUp size={20} />} />
+          <StatCard label="Current Streak" value="15 Days" changePercent="Static" icon={<Flame size={20} />} variant="accent" />
         </div>
 
-        {/* Active Projects (left) + Activity Feed (right) */}
         <div className="flex flex-col lg:flex-row gap-8 mb-10">
           <div className="flex-1 min-w-0">
-            <ActiveProjectsTable />
-            <PortfolioShowcase />
+            <ActiveProjectsTable projects={claimedVexations} loading={loading} />
+            <PortfolioShowcase solutions={completedSolutions} loading={loading} />
           </div>
           <div className="w-full lg:w-[340px] shrink-0">
             <ActivityFeed />
           </div>
         </div>
-
-        
       </div>
     </div>
   )
