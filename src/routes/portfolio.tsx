@@ -1,18 +1,73 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Rocket, Github, ExternalLink, CheckCircle2, ChevronRight } from 'lucide-react'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
+import { Rocket, ExternalLink, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react'
+import { getClaimedVexations, getSolutionsBySolver } from '../lib/db'
+import { useAuth } from '../lib/auth/AuthContext'
+import type { Vexation, Solution } from '../types'
 
 export const Route = createFileRoute('/portfolio')({
   component: PortfolioPage,
 })
 
+function formatDate(timestamp: any): string {
+  if (!timestamp?.toDate) return ''
+  return timestamp.toDate().toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })
+}
+
 function PortfolioPage() {
+  const { user, loading: authLoading } = useAuth()
+  const [activeProjects, setActiveProjects] = useState<Vexation[]>([])
+  const [solutions, setSolutions] = useState<Solution[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    Promise.all([
+      getClaimedVexations(user.uid),
+      getSolutionsBySolver(user.uid) // Completed solutions
+    ])
+      .then(([vexationsData, solutionsData]) => {
+        // Active projects are claimed but not yet solved
+        setActiveProjects(vexationsData.filter(v => v.status === 'Claimed'))
+        setSolutions(solutionsData)
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [user])
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-vexed-bg2 flex items-center justify-center">
+        <Loader2 className="animate-spin text-vexed-primary" size={40} />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-vexed-bg2 flex flex-col items-center justify-center text-white px-6 text-center">
+        <h1 className="text-2xl font-bold mb-2">Sign in to view your portfolio</h1>
+        <p className="text-slate-400">Showcase your contributions and tracked problem-solving.</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-[#0b0914] text-white p-8 lg:p-12 font-sans">
+    <div className="min-h-screen bg-vexed-bg2 text-white p-8 lg:p-12 font-sans">
       <div className="max-w-[1200px] mx-auto">
         
         {/* Header */}
         <h1 className="text-4xl font-extrabold tracking-tight mb-3">Portfolio</h1>
-        <p className="text-base text-slate-400 mb-10 max-w-2xl leading-relaxed">
+        <p className="text-base text-vexed-dim mb-10 max-w-2xl leading-relaxed">
           Showcase of my technical contributions, architecture designs, and validated problem-solving within the Vexed ecosystem.
         </p>
 
@@ -20,8 +75,8 @@ function PortfolioPage() {
           <div className="flex items-center gap-2 px-4 py-2 border border-emerald-500/20 bg-emerald-500/10 rounded-full text-xs font-semibold text-emerald-400">
             <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div> Available for Claims
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 border border-white/5 bg-[#151320] rounded-full text-xs font-semibold text-slate-300">
-            <span className="text-[#553CFF]">42</span> Problems Solved
+          <div className="flex items-center gap-2 px-4 py-2 border border-vexed-accent2 bg-vexed-bg1 rounded-full text-xs font-semibold text-slate-300">
+            <span className="text-vexed-primary">{solutions.length}</span> Problems Solved
           </div>
         </div>
 
@@ -29,132 +84,93 @@ function PortfolioPage() {
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold flex items-center gap-2.5">
-              <Rocket className="text-[#553CFF]" size={22} /> Active Projects
+              <Rocket className="text-vexed-primary" size={22} /> Active Projects
             </h2>
-            <button className="text-[#553CFF] text-sm font-semibold hover:text-white transition-colors">View All</button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Project Card 1 */}
-            <div className="bg-[#151320] border border-white/5 rounded-2xl overflow-hidden group">
-              <div className="h-44 bg-linear-to-br from-[#2D6A4F] to-[#1B4332] p-6 relative flex items-center justify-center">
-                {/* Visual representation placeholder */}
-                <div className="w-[80%] h-16 bg-white/10 rounded-lg blur-sm"></div>
-              </div>
-              <div className="p-7">
-                <h3 className="text-xl font-bold mb-2.5 text-white">Vexed Analytics Engine</h3>
-                <p className="text-sm text-slate-400 mb-6 line-clamp-3 leading-relaxed">
-                  A high-performance telemetry processing pipeline designed for sub-millisecond data validation and real-time fraud detection.
-                </p>
-                <div className="flex items-center gap-2 mb-8">
-                  <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded tracking-wider uppercase">RUST</span>
-                  <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded tracking-wider uppercase">GRAPHQL</span>
-                  <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded tracking-wider uppercase">POSTGRESQL</span>
-                </div>
-                <div className="flex items-center gap-6 border-t border-white/5 pt-5">
-                  <button className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors"><Github size={16}/> GitHub</button>
-                  <button className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors"><ExternalLink size={16}/> Live Demo</button>
-                </div>
-              </div>
+          
+          {activeProjects.length === 0 ? (
+            <div className="bg-vexed-bg1 border border-vexed-accent2 rounded-2xl p-10 py-16 text-center text-vexed-dim">
+              You don't have any active projects right now. Start solving!
             </div>
-
-            {/* Project Card 2 */}
-            <div className="bg-[#151320] border border-white/5 rounded-2xl overflow-hidden group">
-              <div className="h-44 bg-linear-to-br from-[#1E5C6B] to-[#0A2635] p-6 relative flex items-center justify-center">
-                {/* Visual representation placeholder */}
-                <div className="w-[80%] h-16 bg-white/10 rounded-lg blur-sm"></div>
-              </div>
-              <div className="p-7">
-                <h3 className="text-xl font-bold mb-2.5 text-white">Distributed Task Scheduler</h3>
-                <p className="text-sm text-slate-400 mb-6 line-clamp-3 leading-relaxed">
-                  Scalable microservice architecture for background job orchestration, managing millions of concurrent tasks across multiple clusters.
-                </p>
-                <div className="flex items-center gap-2 mb-8">
-                  <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded tracking-wider uppercase">GO</span>
-                  <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded tracking-wider uppercase">REDIS</span>
-                  <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded tracking-wider uppercase">KUBERNETES</span>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {activeProjects.map((project) => (
+                <div key={project.id} className="bg-vexed-bg1 border border-vexed-accent2 rounded-2xl overflow-hidden group">
+                  <div className="h-44 bg-vexed-bg4 p-6 relative flex items-center justify-center border-b border-vexed-accent2">
+                    <div className="w-[80%] h-16 bg-white/5 rounded-lg"></div>
+                  </div>
+                  <div className="p-7">
+                    <h3 className="text-xl font-bold mb-2.5 text-white">{project.title}</h3>
+                    <p className="text-sm text-vexed-dim mb-6 line-clamp-3 leading-relaxed">
+                      {project.description}
+                    </p>
+                    {project.suggestedTechStack && project.suggestedTechStack.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2 mb-8">
+                        {project.suggestedTechStack.slice(0,3).map(tech => (
+                          <span key={tech} className="px-2 py-1 bg-vexed-highlight1/20 text-vexed-highlight2 text-[10px] font-bold rounded tracking-wider uppercase">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-6 border-t border-vexed-accent2 pt-5">
+                      <Link to={`/vexation/$id`} params={{ id: project.id }} className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors">
+                        <ExternalLink size={16}/> View Vexation
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-6 border-t border-white/5 pt-5">
-                  <button className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors"><Github size={16}/> GitHub</button>
-                  <button className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors"><ExternalLink size={16}/> Live Demo</button>
-                </div>
-              </div>
+              ))}
             </div>
-            
-          </div>
+          )}
         </div>
         
-        {/* Solved Problems Section */}
+        {/* Solved Problems Section (Solutions) */}
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold flex items-center gap-2.5">
-              <CheckCircle2 className="text-[#553CFF]" size={22} /> Solved Problems
+              <CheckCircle2 className="text-vexed-primary" size={22} /> Completed Solutions
             </h2>
-            <button className="text-[#553CFF] text-sm font-semibold hover:text-white transition-colors">View Archive</button>
           </div>
           
           <div className="space-y-4">
-            
-            <div className="bg-linear-to-r from-[#151320] to-transparent border border-white/5 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-colors">
-              <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-1.5">
-                  <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">Optimizing Node.js Garbage Collection for High-Traffic APIs</h3>
-                  <span className="px-2.5 py-0.5 bg-slate-800 rounded font-bold text-[10px] text-slate-300 border border-white/5">RESOLVED</span>
-                </div>
-                <p className="text-sm text-slate-400 line-clamp-1">Reduced latency spikes by 40% using heap analysis and V8 flag tuning for the core payment gateway.</p>
+            {solutions.length === 0 ? (
+              <div className="bg-vexed-bg1 border border-vexed-accent2 rounded-xl p-8 text-center text-vexed-dim">
+                No solutions submitted yet.
               </div>
-              <div className="flex items-center gap-6 mt-4 md:mt-0">
-                <div className="text-right flex items-center gap-1.5 font-bold text-[#553CFF] bg-[#553CFF]/10 px-3 py-1 rounded-md">
-                  <span className="font-serif text-[10px]">₿</span> 0.45 BTC
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Node.js</span>
-                  <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">V8</span>
-                </div>
-                <ChevronRight className="text-slate-600 group-hover:text-white transition-colors" size={20} />
-              </div>
-            </div>
-
-            <div className="bg-linear-to-r from-[#151320] to-transparent border border-white/5 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-colors">
-              <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-1.5">
-                  <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">Implementing Zero-Knowledge Proofs for User Identity</h3>
-                  <span className="px-2.5 py-0.5 bg-slate-800 rounded font-bold text-[10px] text-slate-300 border border-white/5">RESOLVED</span>
-                </div>
-                <p className="text-sm text-slate-400 line-clamp-1">Engineered a privacy-preserving authentication module using zk-SNARKs for the decentralized identity hub.</p>
-              </div>
-              <div className="flex items-center gap-6 mt-4 md:mt-0">
-                <div className="text-right flex items-center gap-1.5 font-bold text-[#553CFF] bg-[#553CFF]/10 px-3 py-1 rounded-md">
-                  <span className="font-serif text-[10px]">₿</span> 1.20 BTC
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Cryptography</span>
-                  <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Solidity</span>
-                </div>
-                <ChevronRight className="text-slate-600 group-hover:text-white transition-colors" size={20} />
-              </div>
-            </div>
-
-            <div className="bg-linear-to-r from-[#151320] to-transparent border border-white/5 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-colors">
-              <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-1.5">
-                  <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">Race Condition in Distributed Order Book</h3>
-                  <span className="px-2.5 py-0.5 bg-slate-800 rounded font-bold text-[10px] text-slate-300 border border-white/5">RESOLVED</span>
-                </div>
-                <p className="text-sm text-slate-400 line-clamp-1">Fixed critical race condition in concurrent order matching using lock-free data structures and CAS operations.</p>
-              </div>
-              <div className="flex items-center gap-6 mt-4 md:mt-0">
-                <div className="text-right flex items-center gap-1.5 font-bold text-[#553CFF] bg-[#553CFF]/10 px-3 py-1 rounded-md">
-                  <span className="font-serif text-[10px]">₿</span> 0.75 BTC
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">C++</span>
-                  <span className="px-2 py-1 bg-slate-800 border border-white/5 text-slate-300 rounded text-[10px] font-bold">Distributed Systems</span>
-                </div>
-                <ChevronRight className="text-slate-600 group-hover:text-white transition-colors" size={20} />
-              </div>
-            </div>
-
+            ) : (
+              solutions.map((solution) => (
+                <Link 
+                  to={`/solution/$id`} 
+                  params={{ id: solution.id }} 
+                  key={solution.id} 
+                  className="bg-linear-to-r from-vexed-bg1 to-transparent border border-vexed-accent2 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between group cursor-pointer hover:border-vexed-highlight1/50 transition-colors"
+                >
+                  <div className="max-w-2xl">
+                    <div className="flex items-center gap-3 mb-1.5">
+                      <h3 className="text-base font-bold text-white group-hover:text-vexed-highlight2 transition-colors">{solution.title}</h3>
+                      <span className="px-2.5 py-0.5 bg-vexed-bg3 rounded font-bold text-[10px] text-slate-300 border border-vexed-accent2">RESOLVED</span>
+                    </div>
+                    <p className="text-sm text-vexed-dim line-clamp-1">{solution.description}</p>
+                  </div>
+                  <div className="flex items-center gap-6 mt-4 md:mt-0">
+                    <div className="text-right flex items-center gap-1.5 font-bold text-vexed-primary bg-vexed-primary/10 px-3 py-1 rounded-md">
+                      <span className="text-[12px]">{formatDate(solution.dateSubmitted)}</span>
+                    </div>
+                    {solution.techStack && solution.techStack.length > 0 && (
+                      <div className="items-center gap-2 hidden md:flex">
+                        {solution.techStack.slice(0,2).map(tech => (
+                          <span key={tech} className="px-2 py-1 bg-vexed-bg3 border border-vexed-accent2 text-slate-300 rounded text-[10px] font-bold">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <ChevronRight className="text-slate-600 group-hover:text-white transition-colors" size={20} />
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
 

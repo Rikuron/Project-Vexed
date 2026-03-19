@@ -17,6 +17,7 @@ import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VexationIdRouteImport } from './routes/vexation/$id'
+import { Route as SolutionIdRouteImport } from './routes/solution/$id'
 import { Route as MySavedRouteImport } from './routes/my/saved'
 import { Route as MyClaimedRouteImport } from './routes/my/claimed'
 
@@ -60,6 +61,11 @@ const VexationIdRoute = VexationIdRouteImport.update({
   path: '/vexation/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolutionIdRoute = SolutionIdRouteImport.update({
+  id: '/solution/$id',
+  path: '/solution/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MySavedRoute = MySavedRouteImport.update({
   id: '/my/saved',
   path: '/my/saved',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
+  '/solution/$id': typeof SolutionIdRoute
   '/vexation/$id': typeof VexationIdRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
+  '/solution/$id': typeof SolutionIdRoute
   '/vexation/$id': typeof VexationIdRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
+  '/solution/$id': typeof SolutionIdRoute
   '/vexation/$id': typeof VexationIdRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/my/claimed'
     | '/my/saved'
+    | '/solution/$id'
     | '/vexation/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/my/claimed'
     | '/my/saved'
+    | '/solution/$id'
     | '/vexation/$id'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/my/claimed'
     | '/my/saved'
+    | '/solution/$id'
     | '/vexation/$id'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   SubmitRoute: typeof SubmitRoute
   MyClaimedRoute: typeof MyClaimedRoute
   MySavedRoute: typeof MySavedRoute
+  SolutionIdRoute: typeof SolutionIdRoute
   VexationIdRoute: typeof VexationIdRoute
 }
 
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VexationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solution/$id': {
+      id: '/solution/$id'
+      path: '/solution/$id'
+      fullPath: '/solution/$id'
+      preLoaderRoute: typeof SolutionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my/saved': {
       id: '/my/saved'
       path: '/my/saved'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   SubmitRoute: SubmitRoute,
   MyClaimedRoute: MyClaimedRoute,
   MySavedRoute: MySavedRoute,
+  SolutionIdRoute: SolutionIdRoute,
   VexationIdRoute: VexationIdRoute,
 }
 export const routeTree = rootRouteImport

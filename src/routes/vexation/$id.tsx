@@ -8,15 +8,18 @@ import {
   hasUserVoted,
   incrementViewCount,
   claimVexation,
-  submitSolution
+  submitSolution,
+  createSolution,
+  getSolutionsForVexation
 } from '../../lib/db'
 import { useAuth } from '../../lib/auth/AuthContext'
-import type { Vexation } from '../../types'
+import type { Vexation, Solution } from '../../types'
 import ClaimedSolversCard from '../../components/cards/ClaimedSolversCard'
 import { formatTimeAgo } from '../../lib/utils/formatTimeAgo'
 import { SEVERITY_STYLES } from '../../lib/constants/severityStyles'
 import AIInsightsCard from '../../components/cards/AIInsightCard'
 import DeveloperActionsBar from '../../components/cards/DeveloperActionsBar'
+import SubmitSolutionModal from '../../components/forms/SubmitSolutionModal'
 
 export const Route = createFileRoute('/vexation/$id')({
   component: VexationDetailPage,
@@ -27,6 +30,7 @@ function VexationDetailPage() {
   const { user, userProfile } = useAuth()
 
   const [vexation, setVexation] = useState<Vexation | null>(null)
+  const [solutions, setSolutions] = useState<Solution[]>([])
   const [loading, setLoading] = useState(true)
   const [hasVoted, setHasVoted] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
@@ -36,6 +40,7 @@ function VexationDetailPage() {
   const [shareTooltip, setShareTooltip] = useState(false)
   const [claimLoading, setClaimLoading] = useState(false)
   const [solveLoading, setSolveLoading] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const viewCountedRef = useRef(false)
 
   // Fetch vexation data
@@ -49,6 +54,9 @@ function VexationDetailPage() {
           setLocalUpvotes(data.upvotes)
           setLocalSaveCount(data.savedBy.length)
           setIsSaved(user ? data.savedBy.includes(user.uid) : false)
+
+          const sols = await getSolutionsForVexation(id)
+          setSolutions(sols)
 
           // Increment view count (fire and forget)
           if (!viewCountedRef.current) {
@@ -156,29 +164,43 @@ function VexationDetailPage() {
   }
 
   // Solve handler
-  async function handleSolve() {
-    if (!user || solveLoading || !vexation) return
+    function handleSolve() {
+    if (!user || !vexation) return
+    setIsModalOpen(true)
+  }
 
-    const url = window.prompt("Submit the URL to your solution (e.g., GitHub repo or Live Demo): ")
-    if (!url) return
-
-    if (!url.startsWith('https://')) {
-      alert("Please enter a valid URL starting with https://")
-      return
-    }
-
+  async function handleModalSubmit(solutionData: any) {
+    if (!user || !userProfile || !vexation) return
     setSolveLoading(true)
+    
     try {
-      await submitSolution(vexation.id, user.uid, url)
+      // 1. Create the new Solution document
+      await createSolution({
+        ...solutionData,
+        vexationId: vexation.id,
+        solverId: user.uid,
+        solverDisplayName: userProfile.displayName || 'Anonymous Developer',
+      })
+
+      // 2. Update the Vexation document status using the repository/live link
+      const primaryUrl = solutionData.repositoryUrl || solutionData.liveUrl || ''
+      await submitSolution(vexation.id, user.uid, primaryUrl)
 
       setVexation({
         ...vexation,
         status: 'Solved',
-        solutionUrl: [...(vexation.solutionUrl || []), url]
+        solutionUrl: [...(vexation.solutionUrl || []), primaryUrl]
       })
-    } catch (error) {
-      console.error('Failed to submit solution: ', error)
-      alert("Failed to submit solution. Try again later.")
+
+      // 3. Refetch
+      const refreshedSols = await getSolutionsForVexation(vexation.id)
+      setSolutions(refreshedSols)
+      
+      setIsModalOpen(false)
+    } catch (error: any) {
+      console.error('Failed to save full solution:', error)
+      alert(error.message || 'Failed to submit solution. Please try again.')
+      throw error
     } finally {
       setSolveLoading(false)
     }
@@ -187,6 +209,7 @@ function VexationDetailPage() {
   const isSolver = userProfile?.role === 'Solver'
   const isClaimedByMe = user && vexation?.claimedByID?.includes(user.uid)
   const isOwnPost = user?.uid === vexation?.authorId
+  const hasSubmittedSolution = !!(user && solutions.some(s => s.solverId === user.uid))
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -277,6 +300,7 @@ function VexationDetailPage() {
               <DeveloperActionsBar
                 status={vexation.status}
                 isClaimedByMe={!!isClaimedByMe}
+                hasSubmittedSolution={!!hasSubmittedSolution}
                 claimLoading={claimLoading}
                 solveLoading={solveLoading}
                 onClaim={handleClaim}
@@ -284,6 +308,33 @@ function VexationDetailPage() {
               />
             )}
 
+            {/* Display Submitted Solutions */}
+            {solutions.length > 0 && (
+              <div className="pt-8 mb-6">
+                <h3 className="text-xl font-bold text-white mb-6">Submitted Solutions ({solutions.length})</h3>
+                <div className="space-y-4">
+                  {solutions.map(sol => (
+                    <Link to="/solution/$id" params={{ id: sol.id }} key={sol.id} className="block p-5 bg-linear-to-r from-vexed-bg1 to-transparent border border-vexed-accent2 rounded-xl hover:border-vexed-highlight1/50 transition-colors group">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-bold text-white group-hover:text-vexed-highlight2 transition-colors">{sol.title}</h4>
+                        <span className="text-xs text-vexed-dim">{sol.solverDisplayName}</span>
+                      </div>
+                      <p className="text-sm text-vexed-dim line-clamp-2">{sol.description}</p>
+                      
+                      <div className="mt-4 flex items-center gap-2">
+                         {sol.techStack && sol.techStack.length > 0 && (
+                           sol.techStack.slice(0,3).map(tech => (
+                             <span key={tech} className="px-2 py-1 bg-vexed-bg3 border border-vexed-accent2 text-slate-300 rounded text-[10px] font-bold">
+                               {tech}
+                             </span>
+                           ))
+                         )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Footer: upvotes, comments, contact */}
             <div className="flex items-center gap-4 border-t border-slate-700/50 pt-4">
@@ -347,6 +398,12 @@ function VexationDetailPage() {
             )}
           </div>
         </div>
+
+        <SubmitSolutionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleModalSubmit}
+        />
       </div>
     </div>
   )

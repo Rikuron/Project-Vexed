@@ -24,8 +24,8 @@ function ClaimedVexationsPage() {
 
   // Tab configurations corresponding to UI mocked tabs
   const tabs = [
-    { id: 'Claimed', label: 'Claimed', count: claimedVexations.length || 12, icon: <Zap size={14} /> },
-    { id: 'Bookmarked', label: 'Bookmarked', count: bookmarkedVexations.length || 24, icon: <Bookmark size={14} /> },
+    { id: 'Claimed', label: 'Claimed', count: claimedVexations.length, icon: <Zap size={14} /> },
+    { id: 'Bookmarked', label: 'Bookmarked', count: bookmarkedVexations.length, icon: <Bookmark size={14} /> },
     { id: 'Completed', label: 'Completed', count: 142, icon: <CheckCircle2 size={14} /> },
   ]
 

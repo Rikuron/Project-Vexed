@@ -106,7 +106,7 @@ export default function SubmitForm({
           <button
             type="submit"
             disabled={!canSubmit || (state !== 'idle' && state !== 'error')}
-            className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-gray-500 px-6 py-3.5 text-sm font-semibold text-white transition-colors"
+            className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:cursor-pointer hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-gray-500 px-6 py-3.5 text-sm font-semibold text-white transition-colors"
           >
             {state === 'analyzing' ? (
               <>
