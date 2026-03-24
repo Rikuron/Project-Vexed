@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { CheckCircle, ThumbsUp, Flame, Bell, CirclePlus } from 'lucide-react'
 import StatCard from './cards/StatCard'
 import ActivityFeed from './cards/ActivityFeed'
-import ActiveProjectsTable from './cards/ActiveProjectsTable'
+import ActiveVexationsTable from './cards/ActiveVexationsTable'
 import PortfolioShowcase from './cards/PortfolioShowcase'
 import { useAuth } from '../lib/auth/AuthContext'
 import { getClaimedVexations } from '../lib/db/vexations'
@@ -66,8 +66,8 @@ export default function DeveloperDashboard() {
             label="Solved Problems" 
             value={loading ? "..." : completedSolutions.length.toString()} 
             changePercent="Up to date" 
-            icon={<CheckCircle size={20} />} /
-          >
+            icon={<CheckCircle size={20} />} 
+          />
           <StatCard 
             label="Upvotes Received" 
             value={loading ? "..." : totalUpvotes.toString()}
@@ -85,7 +85,7 @@ export default function DeveloperDashboard() {
 
         <div className="flex flex-col lg:flex-row gap-8 mb-10">
           <div className="flex-1 min-w-0">
-            <ActiveProjectsTable projects={claimedVexations} loading={loading} />
+            <ActiveVexationsTable projects={claimedVexations} loading={loading} />
             <PortfolioShowcase solutions={completedSolutions} loading={loading} />
           </div>
           <div className="w-full lg:w-[340px] shrink-0">

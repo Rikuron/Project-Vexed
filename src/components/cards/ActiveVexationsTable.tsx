@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Rocket } from 'lucide-react'
 import type { Vexation } from '../../types'
 
-interface ActiveProjectsTableProps {
+interface ActiveVexationsTableProps {
   projects: Vexation[]
   loading?: boolean
 }
@@ -12,8 +12,7 @@ const statusStyles: Record<string, string> = {
   'Solved': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
 }
 
-export default function ActiveProjectsTable({ projects, loading }: ActiveProjectsTableProps) {
-  // Only show projects that are currently "Claimed" (in progress)
+export default function ActiveVexationsTable({ projects, loading }: ActiveVexationsTableProps) {
   const activeProjects = projects.filter(p => p.status === 'Claimed').slice(0, 3)
 
   return (
