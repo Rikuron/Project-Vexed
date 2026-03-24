@@ -8,6 +8,7 @@ import PortfolioShowcase from './cards/PortfolioShowcase'
 import { useAuth } from '../lib/auth/AuthContext'
 import { getClaimedVexations } from '../lib/db/vexations'
 import { getSolutionsBySolver } from '../lib/db/solutions'
+import { calculateCurrentStreak } from '../lib/utils/streak'
 import type { Vexation, Solution } from '../types'
 
 export default function DeveloperDashboard() {
@@ -17,6 +18,13 @@ export default function DeveloperDashboard() {
   const [loading, setLoading] = useState(true)
 
   const totalUpvotes = completedSolutions.reduce((sum, solution) => sum + (solution.upvotes || 0), 0)
+
+  const activityDates = [
+    ...claimedVexations.map(v => v.updatedAt?.toDate()),
+    ...completedSolutions.map(s => s.dateStarted?.toDate()),
+    ...completedSolutions.map(s => s.dateSubmitted?.toDate())
+  ]
+  const currentStreak = calculateCurrentStreak(activityDates)
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +46,7 @@ export default function DeveloperDashboard() {
   }, [user])
 
   return (
-    <div className="min-h-screen bg-[#0D0C15] text-white p-6 lg:p-10 font-sans overflow-hidden relative">
+    <div className="min-h-screen bg-vexed-bg2 text-white p-6 lg:p-10 font-sans overflow-hidden relative">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[7.5%] left-[12.5%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
         <div className="absolute bottom-[5%] right-[7.5%] translate-x-1/4 translate-y-1/4 w-[650px] h-[650px] rounded-full bg-vexed-highlight1/15 blur-[150px]" />
@@ -54,7 +62,7 @@ export default function DeveloperDashboard() {
             </button>
             <Link
               to="/browse"
-              className="bg-[#553CFF] hover:bg-[#4A34DF] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(85,60,255,0.2)] hover:shadow-[0_0_20px_rgba(85,60,255,0.4)]"
+              className="bg-vexed-highlight1 hover:bg-vexed-highlight3 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_var(--color-vexed-highlight1)] hover:shadow-[0_0_20px_var(--color-vexed-highlight3)]"
             >
               <CirclePlus size={16} /> Claim New Vexation
             </Link>
@@ -76,8 +84,8 @@ export default function DeveloperDashboard() {
           />
           <StatCard 
             label="Current Streak" 
-            value="15 Days" 
-            changePercent="Static" 
+            value={loading ? "..." : `${currentStreak} Day${currentStreak !== 1 ? 's' : ''}`} 
+            changePercent={currentStreak > 0 ? "Active" : "No Streak"} 
             icon={<Flame size={20} />} 
             variant="accent" 
           />
