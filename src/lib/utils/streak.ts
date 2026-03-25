@@ -1,4 +1,6 @@
-export function calculateCurrentStreak(dates: (Date | undefined)[]): number {
+import type { Vexation, Solution } from '../../types'
+
+function calculateCurrentStreak(dates: (Date | undefined)[]): number {
   const validDates = dates.filter((d): d is Date => d !== undefined)
   if (validDates.length === 0) return 0
 
@@ -29,4 +31,16 @@ export function calculateCurrentStreak(dates: (Date | undefined)[]): number {
   }
 
   return streak
+}
+
+export function getStreakFromData(
+  vexations: Vexation[], 
+  solutions: Solution[]
+): number {
+  const activityDates = [
+    ...vexations.map(v => v.updatedAt?.toDate()),
+    ...solutions.map(s => s.dateStarted?.toDate()),
+    ...solutions.map(s => s.dateSubmitted?.toDate())
+  ]
+  return calculateCurrentStreak(activityDates)
 }

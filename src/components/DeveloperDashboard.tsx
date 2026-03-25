@@ -8,7 +8,7 @@ import PortfolioShowcase from './cards/PortfolioShowcase'
 import { useAuth } from '../lib/auth/AuthContext'
 import { getClaimedVexations } from '../lib/db/vexations'
 import { getSolutionsBySolver } from '../lib/db/solutions'
-import { calculateCurrentStreak } from '../lib/utils/streak'
+import { getStreakFromData } from '../lib/utils/streak'
 import type { Vexation, Solution } from '../types'
 
 export default function DeveloperDashboard() {
@@ -19,12 +19,7 @@ export default function DeveloperDashboard() {
 
   const totalUpvotes = completedSolutions.reduce((sum, solution) => sum + (solution.upvotes || 0), 0)
 
-  const activityDates = [
-    ...claimedVexations.map(v => v.updatedAt?.toDate()),
-    ...completedSolutions.map(s => s.dateStarted?.toDate()),
-    ...completedSolutions.map(s => s.dateSubmitted?.toDate())
-  ]
-  const currentStreak = calculateCurrentStreak(activityDates)
+  const currentStreak = getStreakFromData(claimedVexations, completedSolutions)
 
   useEffect(() => {
     async function fetchData() {
