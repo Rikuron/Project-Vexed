@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import type { Vexation, AIAnalysis, VexationFilters } from '../../types'
+import { logActivity } from './activities'
 
 function normalizeCase(value?: string) {
   if (!value) return ''
@@ -161,9 +162,22 @@ export async function upvoteVexation(
   // Add vote
   const { setDoc, serverTimestamp: ts } = await import('firebase/firestore')
   await setDoc(voteRef, { createdAt: ts() })
-  await updateDoc(doc(db, 'vexations', vexationId), {
-    upvotes: increment(1),
-  })
+  
+  const vexation = await getVexationById(vexationId)
+  if (vexation) {
+    await updateDoc(doc(db, 'vexations', vexationId), {
+      upvotes: increment(1)
+    })
+
+    await logActivity({
+      ownerId: userId,
+      actorId: userId,
+      actorName: 'You',
+      type: 'UPVOTE_VEXATION',
+      targetId: vexationId,
+      targetTitle: vexation.title || 'Unknown Vexation'
+    })
+  }
 
   return true // vote added
 }
@@ -223,11 +237,30 @@ export async function incrementViewCount(vexationId: string): Promise<void> {
 /* Solver functions */
 
 // Claim a vexation / POST
-export async function claimVexation(vexationId: string, userId: string): Promise<void> {
+export async function claimVexation(
+  vexationId: string, 
+  userId: string,
+  vexationTitle?: string
+): Promise<void> {
   await updateDoc(doc(db, 'vexations', vexationId), {
     status: 'Claimed',
     claimedByID: arrayUnion(userId),
     updatedAt: serverTimestamp(),
+  })
+
+  let finalTitle = vexationTitle
+  if (!finalTitle) {
+    const vexation = await getVexationById(vexationId)
+    finalTitle = vexation?.title ?? 'Unknown Vexation'
+  }
+
+  await logActivity({
+    ownerId: userId,
+    actorId: userId,
+    actorName: 'You',
+    type: 'CLAIM_VEXATION',
+    targetId: vexationId,
+    targetTitle: finalTitle
   })
 }
 

@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import type { Solution } from '../../types'
+import { logActivity } from './activities'
 
 const solutionsRef = collection(db, 'solutions')
 
@@ -119,9 +120,40 @@ export async function upvoteSolution(
 
   const { setDoc, serverTimestamp: ts } = await import('firebase/firestore')
   await setDoc(voteRef, { createdAt: ts() })
-  await updateDoc(doc(db, 'solutions', solutionId), {
-    upvotes: increment(1)
-  })
+  
+  const solutionSnap = await getDoc(doc(db, 'solutions', solutionId))
+  const solutionData = solutionSnap.data()
+
+  if (solutionData) {
+    await updateDoc(doc(db, 'solutions', solutionId), {
+      upvotes: increment(1)
+    })
+
+    // Log what solver did
+    await logActivity({
+      ownerId: userId,
+      actorId: userId,
+      actorName: 'You',
+      type: 'UPVOTE_SOLUTION',
+      targetId: solutionId,
+      targetTitle: solutionData.title || 'Unknown Solution'
+    })
+
+    // Log what happened to solver
+    if (solutionData.solverId !== userId) {
+      const upvoterSnap = await getDoc(doc(db, 'users', userId))
+      const upvoterName = upvoterSnap.data()?.displayName || 'Someone'
+
+      await logActivity ({
+        ownerId: solutionData.solverId,
+        actorId: userId,
+        actorName: upvoterName,
+        type: 'SOLUTION_UPVOTED',
+        targetId: solutionId,
+        targetTitle: solutionData.title || 'Unknown Solution'
+      })
+    }
+  }
 
   return true
 }

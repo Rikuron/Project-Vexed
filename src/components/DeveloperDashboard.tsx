@@ -8,13 +8,15 @@ import PortfolioShowcase from './cards/PortfolioShowcase'
 import { useAuth } from '../lib/auth/AuthContext'
 import { getClaimedVexations } from '../lib/db/vexations'
 import { getSolutionsBySolver } from '../lib/db/solutions'
+import { getUserActivities } from '../lib/db/activities'
 import { getStreakFromData } from '../lib/utils/streak'
-import type { Vexation, Solution } from '../types'
+import type { Vexation, Solution, Activity } from '../types'
 
 export default function DeveloperDashboard() {
   const { user } = useAuth()
   const [claimedVexations, setClaimedVexations] = useState<Vexation[]>([])
   const [completedSolutions, setCompletedSolutions] = useState<Solution[]>([])
+  const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
 
   const totalUpvotes = completedSolutions.reduce((sum, solution) => sum + (solution.upvotes || 0), 0)
@@ -25,12 +27,14 @@ export default function DeveloperDashboard() {
     async function fetchData() {
       if (!user?.uid) return
       try {
-        const [vexations, solutions] = await Promise.all([
+        const [vexations, solutions, dbActivities] = await Promise.all([
           getClaimedVexations(user.uid),
-          getSolutionsBySolver(user.uid)
+          getSolutionsBySolver(user.uid),
+          getUserActivities(user.uid)
         ])
         setClaimedVexations(vexations)
         setCompletedSolutions(solutions)
+        setActivities(dbActivities)
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
       } finally {
@@ -92,7 +96,7 @@ export default function DeveloperDashboard() {
             <PortfolioShowcase solutions={completedSolutions} loading={loading} />
           </div>
           <div className="w-full lg:w-[340px] shrink-0">
-            <ActivityFeed />
+            <ActivityFeed activities={activities} />
           </div>
         </div>
       </div>

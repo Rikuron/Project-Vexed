@@ -1,3 +1,4 @@
 export * from './user'
 export * from './vexation'
 export * from './solution'
+export * from './activity'
