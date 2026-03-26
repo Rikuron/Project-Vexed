@@ -297,3 +297,21 @@ export async function getClaimedVexations(userId: string): Promise<Vexation[]> {
     return []
   }
 }
+
+// Edit a vexation / PUT
+export async function updateVexation(
+  vexationId: string,
+  userId: string,
+  updates: Partial<{ title: string; description: string }>
+): Promise<void> {
+  const vexRef = doc(db, 'vexations', vexationId)
+  const vexSnap = await getDoc(vexRef)
+
+  if (!vexSnap.exists()) throw new Error('Vexation not found')
+  if (vexSnap.data()?.authorId !== userId) throw new Error('Unauthorized')
+
+  await updateDoc(vexRef, {
+    ...updates,
+    updatedAt: serverTimestamp()
+  })
+}

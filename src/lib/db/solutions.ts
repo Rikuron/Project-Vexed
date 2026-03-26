@@ -10,7 +10,8 @@ import {
   serverTimestamp,
   updateDoc,
   increment,
-  deleteDoc
+  deleteDoc,
+  Timestamp
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import type { Solution } from '../../types'
@@ -166,4 +167,29 @@ export async function hasUserUpvotedSolution(
   const voteRef = doc(db, 'solutions', solutionId, 'votes', userId)
   const voteSnap = await getDoc(voteRef)
   return voteSnap.exists()
+}
+
+// Edit a solution / PUT
+export async function updateSolution(
+  solutionId: string,
+  userId: string,
+  updates: Partial<{ 
+    title: string
+    description: string
+    repositoryUrl: string
+    liveUrl: string
+    techStack: string[]
+    updatedAt: Timestamp
+  }>
+): Promise<void> {
+  const solRef = doc(db, 'solutions', solutionId)
+  const solSnap = await getDoc(solRef)
+
+  if (!solSnap.exists()) throw new Error ('Solution not found')
+  if (solSnap.data()?.solverId !== userId) throw new Error ('Unauthorized')
+
+  await updateDoc(solRef, {
+    ...updates,
+    updatedAt: serverTimestamp()
+  })
 }

@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowBigUp, Bookmark, Share2, MessageSquare, Loader2 } from 'lucide-react'
+import { 
+  ArrowBigUp, Bookmark, Share2, 
+  MessageSquare, Loader2, Pencil 
+} from 'lucide-react'
 import { 
   getVexationById,
   upvoteVexation,
@@ -10,7 +13,8 @@ import {
   claimVexation,
   submitSolution,
   createSolution,
-  getSolutionsForVexation
+  getSolutionsForVexation,
+  updateVexation
 } from '../../lib/db'
 import { useAuth } from '../../lib/auth/AuthContext'
 import type { Vexation, Solution } from '../../types'
@@ -20,6 +24,7 @@ import { SEVERITY_STYLES } from '../../lib/constants/severityStyles'
 import AIInsightsCard from '../../components/cards/AIInsightCard'
 import DeveloperActionsBar from '../../components/cards/DeveloperActionsBar'
 import SubmitSolutionModal from '../../components/forms/SubmitSolutionModal'
+import EditVexationModal from '../../components/forms/EditVexationModal'
 
 export const Route = createFileRoute('/vexation/$id')({
   component: VexationDetailPage,
@@ -40,7 +45,8 @@ function VexationDetailPage() {
   const [shareTooltip, setShareTooltip] = useState(false)
   const [claimLoading, setClaimLoading] = useState(false)
   const [solveLoading, setSolveLoading] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSubmitSolutionModalOpen, setIsSubmitSolutionModalOpen] = useState(false)
+  const [isEditVexationModalOpen, setIsEditVexationModalOpen] = useState(false)
   const viewCountedRef = useRef(false)
 
   // Fetch vexation data
@@ -166,7 +172,7 @@ function VexationDetailPage() {
   // Solve handler
     function handleSolve() {
     if (!user || !vexation) return
-    setIsModalOpen(true)
+    setIsSubmitSolutionModalOpen(true)
   }
 
   async function handleModalSubmit(solutionData: any) {
@@ -196,13 +202,32 @@ function VexationDetailPage() {
       const refreshedSols = await getSolutionsForVexation(vexation.id)
       setSolutions(refreshedSols)
       
-      setIsModalOpen(false)
+      setIsSubmitSolutionModalOpen(false)
     } catch (error: any) {
       console.error('Failed to save full solution:', error)
       alert(error.message || 'Failed to submit solution. Please try again.')
       throw error
     } finally {
       setSolveLoading(false)
+    }
+  }
+
+  async function handleEditSubmit(updates: {
+    title: string
+    description: string
+  }) {
+    if (!user || !vexation) return
+
+    try {
+      await updateVexation(vexation.id, user.uid, updates)
+
+      setVexation({
+        ...vexation,
+        ...updates
+      })
+    } catch (error: any) {
+      console.error('Failed to update vexation:', error)
+      alert(error.message || 'Failed to update vexation. Please try again.')
     }
   }
 
@@ -226,6 +251,17 @@ function VexationDetailPage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Edit Button - appears only for Poster of Vexation */}
+            {isOwnPost && (
+              <button
+                onClick={() => setIsEditVexationModalOpen(true)}
+                className="flex items-center gap-2 rounded-lg bg-vexed-bg1 text-gray-400 border border-slate-700 hover:text-white cursor-pointer hover:border-slate-600 px-3 py-2 text-sm font-medium transition-colors"
+                title="Edit Vexation"
+              >
+                <Pencil size={18} />
+              </button>
+            )}
+
             {/* Share */}
             <div className="relative">
               <button
@@ -400,10 +436,19 @@ function VexationDetailPage() {
         </div>
 
         <SubmitSolutionModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isSubmitSolutionModalOpen}
+          onClose={() => setIsSubmitSolutionModalOpen(false)}
           onSubmit={handleModalSubmit}
         />
+
+        {vexation && (
+          <EditVexationModal
+            isOpen={isEditVexationModalOpen}
+            onClose={() => setIsEditVexationModalOpen(false)}
+            vexation={vexation}
+            onSubmit={handleEditSubmit}
+          />
+        )}
       </div>
     </div>
   )

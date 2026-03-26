@@ -1,9 +1,14 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { getSolutionById, getVexationById, upvoteSolution, hasUserUpvotedSolution } from '../../lib/db'
+import { getSolutionById, getVexationById, upvoteSolution, hasUserUpvotedSolution, updateSolution } from '../../lib/db'
 import type { Solution, Vexation } from '../../types'
 import { useAuth } from '../../lib/auth/AuthContext'
-import { Loader2, ArrowLeft, Github, ExternalLink, Calendar, User, Target, ArrowBigUp } from 'lucide-react'
+import { 
+  Loader2, ArrowLeft, Github, 
+  ExternalLink, Calendar, User, 
+  Target, ArrowBigUp, Pencil
+} from 'lucide-react'
+import EditSolutionModal from '../../components/forms/EditSolutionModal'
 
 export const Route = createFileRoute('/solution/$id')({
   component: SolutionDetailPage,
@@ -30,6 +35,9 @@ function SolutionDetailPage() {
   const [upvotes, setUpvotes] = useState(0)
   const [hasUpvoted, setHasUpvoted] = useState(false)
   const [isVoting, setIsVoting] = useState(false)
+
+  // Edit State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -79,6 +87,21 @@ function SolutionDetailPage() {
     }
   }
 
+  const handleEditSubmit = async (updates: any) => {
+    if (!user || !solution) return
+
+    try {
+      await updateSolution(solution.id, user.uid, updates)
+      setSolution({
+        ...solution,
+        ...updates
+      })
+    } catch (error: any) {
+      console.error('Failed to update solution: ', error)
+      alert('Failed to update solution. Please try again.')
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-vexed-bg2 flex items-center justify-center">
@@ -100,9 +123,21 @@ function SolutionDetailPage() {
 
   return (
     <div className="min-h-screen bg-vexed-bg2 text-white p-8 lg:p-12 font-sans">
-      <Link to="/portfolio" className="inline-flex items-center gap-2 text-sm text-vexed-dim hover:text-white transition-colors mb-8">
-        <ArrowLeft size={16} /> Back to Portfolio
-      </Link>
+      <div className="flex items-center justify-between mb-8">
+        <Link to="/portfolio" className="inline-flex items-center gap-2 text-sm text-vexed-dim hover:text-white transition-colors">
+          <ArrowLeft size={16} /> Back to Portfolio
+        </Link>
+
+        {user?.uid === solution.solverId && (
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="flex items-center gap-2 rounded-lg bg-vexed-bg1 text-gray-400 border border-slate-700 hover:text-white hover:border-slate-600 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
+          >
+            <Pencil size={18} />
+            Edit
+          </button>
+        )}
+      </div>
 
       {/* Header featuring Upvote Button */}
       <div className="mb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -204,6 +239,16 @@ function SolutionDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Edit Solution Modal */}
+      {solution && (
+        <EditSolutionModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={handleEditSubmit}
+          solution={solution}
+        />
+      )}
     </div>
   )
 }
