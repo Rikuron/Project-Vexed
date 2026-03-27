@@ -224,6 +224,24 @@ export async function getSavedVexations(userId: string): Promise<Vexation[]> {
   }
 }
 
+// Edit a vexation / PUT
+export async function updateVexation(
+  vexationId: string,
+  userId: string,
+  updates: Partial<Vexation>
+): Promise<void> {
+  const vexRef = doc(db, 'vexations', vexationId)
+  const vexSnap = await getDoc(vexRef)
+
+  if (!vexSnap.exists()) throw new Error('Vexation not found')
+  if (vexSnap.data()?.authorId !== userId) throw new Error('Unauthorized')
+
+  await updateDoc(vexRef, {
+    ...updates,
+    updatedAt: serverTimestamp()
+  })
+}
+
 // Increment view count / POST
 export async function incrementViewCount(vexationId: string): Promise<void> {
   await updateDoc(doc(db, 'vexations', vexationId), {
@@ -296,22 +314,4 @@ export async function getClaimedVexations(userId: string): Promise<Vexation[]> {
     console.error(error.message)
     return []
   }
-}
-
-// Edit a vexation / PUT
-export async function updateVexation(
-  vexationId: string,
-  userId: string,
-  updates: Partial<{ title: string; description: string }>
-): Promise<void> {
-  const vexRef = doc(db, 'vexations', vexationId)
-  const vexSnap = await getDoc(vexRef)
-
-  if (!vexSnap.exists()) throw new Error('Vexation not found')
-  if (vexSnap.data()?.authorId !== userId) throw new Error('Unauthorized')
-
-  await updateDoc(vexRef, {
-    ...updates,
-    updatedAt: serverTimestamp()
-  })
 }

@@ -212,10 +212,7 @@ function VexationDetailPage() {
     }
   }
 
-  async function handleEditSubmit(updates: {
-    title: string
-    description: string
-  }) {
+  async function handleEditSubmit(updates: Partial<Vexation>) {
     if (!user || !vexation) return
 
     try {
