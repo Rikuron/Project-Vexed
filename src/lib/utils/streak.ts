@@ -34,13 +34,14 @@ function calculateCurrentStreak(dates: (Date | undefined)[]): number {
 }
 
 export function getStreakFromData(
-  vexations: Vexation[], 
+  vexations: Vexation[],
   solutions: Solution[]
 ): number {
   const activityDates = [
     ...vexations.map(v => v.updatedAt?.toDate()),
     ...solutions.map(s => s.dateStarted?.toDate()),
-    ...solutions.map(s => s.dateSubmitted?.toDate())
+    ...solutions.map(s => s.dateSubmitted?.toDate()),
+    ...solutions.map(s => s.updatedAt?.toDate())
   ]
   return calculateCurrentStreak(activityDates)
 }

@@ -44,6 +44,7 @@ function getActivityStyle(item: GroupedActivity) {
         ring: 'border-amber-500 bg-amber-500/20'
       }
     }
+    case 'UPDATE_SOLUTION': return { highlight: 'You updated', dot: 'bg-teal-400', ring: 'border-teal-500/20', text: 'text-teal-400' }
     default: return { highlight: 'Activity', dot: 'bg-slate-400', ring: 'border-slate-500 bg-slate-500/20', text: 'text-slate-400' }
   }
 }

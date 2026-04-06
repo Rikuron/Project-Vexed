@@ -13,5 +13,6 @@ export interface Solution {
   dateSubmitted: Timestamp
   techStack?: string[]
   upvotes?: number
+  images?: string[]
   updatedAt?: Timestamp
 }

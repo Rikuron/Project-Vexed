@@ -240,6 +240,24 @@ function SolutionDetailPage() {
         </div>
       </div>
 
+      {/* Image Gallery */}
+      {solution.images && solution.images.length > 0 && (
+        <div className="mt-8 border-t border-vexed-accent2 pt-8">
+          <h3 className="text-sm font-bold text-vexed-dim uppercase tracking-widest mb-4">Gallery & Screenshots</h3>
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+            {solution.images.map((imgUrl, i) => (
+              <a href={imgUrl} target="_blank" rel="noreferrer" key={i} className="shrink-0 snap-center">
+                <img 
+                  src={imgUrl} 
+                  alt={`Screenshot ${i + 1}`} 
+                  className="h-48 md:h-64 rounded-xl border border-vexed-accent2 object-cover hover:border-vexed-primary transition-colors cursor-pointer" 
+                />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Edit Solution Modal */}
       {solution && (
         <EditSolutionModal

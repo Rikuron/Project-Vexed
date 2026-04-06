@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { X, Loader2, UploadCloud } from 'lucide-react'
 import type { Solution } from '../../types/solution'
 import { Timestamp } from 'firebase/firestore'
+import { uploadImages } from '../../lib/db/storage'
 
 interface SubmitSolutionModalProps {
   isOpen: boolean
@@ -19,6 +20,7 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
     dateStarted: '',
     techStack: ''
   })
+  const [imageFiles, setImageFiles] = useState<File[]>([])
 
   if (!isOpen) return null
 
@@ -27,6 +29,12 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
     setLoading(true)
     
     try {
+      // Upload images first
+      let uploadedImageUrls: string[] = []
+      if (imageFiles.length > 0) {
+        uploadedImageUrls = await uploadImages(imageFiles, 'solutions')
+      }
+
       const parsedDate = new Date(formData.dateStarted)
       
       const solutionData = {
@@ -35,7 +43,8 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
         repositoryUrl: formData.repositoryUrl,
         liveUrl: formData.liveUrl,
         dateStarted: Timestamp.fromDate(parsedDate),
-        techStack: formData.techStack.split(',').map(s => s.trim()).filter(Boolean)
+        techStack: formData.techStack.split(',').map(s => s.trim()).filter(Boolean),
+        images: uploadedImageUrls
       }
       
       await onSubmit(solutionData)
@@ -48,9 +57,15 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
     }
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setImageFiles(prev => [...prev, ...Array.from(e.target.files!)])
+  }
+
+  const removeFile = (index: number) => setImageFiles(prev => prev.filter((_, i) => i !== index))
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-vexed-bg2 border border-vexed-accent2 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative">
+      <div className="bg-vexed-bg2 border border-vexed-accent2 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
         <div className="p-6 border-b border-vexed-accent2 flex justify-between items-center bg-vexed-bg1">
           <h2 className="text-xl font-bold text-white">Publish Your Solution</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors cursor-pointer">
@@ -58,7 +73,7 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           <div>
             <label className="block text-xs font-semibold text-vexed-dim uppercase tracking-wider mb-2">Solution Title *</label>
             <input 
@@ -127,6 +142,44 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
                 placeholder="e.g. React, Node.js, Redis"
               />
             </div>
+
+            {/* Image Upload Section */}
+            <div className="pt-2">
+              <label className="block text-xs font-semibold text-vexed-dim uppercase tracking-wider mb-2">Screenshots & Images</label>
+              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-sm font-semibold text-gray-300 w-full text-center">
+                <UploadCloud size={18} />
+                Select Images
+                <input 
+                  type="file" 
+                  multiple 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleFileChange} 
+                />
+              </label>
+
+              {imageFiles.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4 p-4 border border-slate-800 bg-slate-900/50 rounded-lg">
+                  {imageFiles.map((file, idx) => (
+                    <div key={idx} className="relative group rounded-md overflow-hidden bg-slate-800 shrink-0">
+                      <img 
+                        src={URL.createObjectURL(file)} 
+                        alt="Preview" 
+                        className="h-16 w-16 object-cover opacity-80 group-hover:opacity-40 transition-opacity"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => removeFile(idx)}
+                        className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-vexed-accent2 mt-6">

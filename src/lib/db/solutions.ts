@@ -10,8 +10,7 @@ import {
   serverTimestamp,
   updateDoc,
   increment,
-  deleteDoc,
-  Timestamp
+  deleteDoc
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import type { Solution } from '../../types'
@@ -173,14 +172,7 @@ export async function hasUserUpvotedSolution(
 export async function updateSolution(
   solutionId: string,
   userId: string,
-  updates: Partial<{ 
-    title: string
-    description: string
-    repositoryUrl: string
-    liveUrl: string
-    techStack: string[]
-    updatedAt: Timestamp
-  }>
+  updates: Partial<Solution>
 ): Promise<void> {
   const solRef = doc(db, 'solutions', solutionId)
   const solSnap = await getDoc(solRef)
@@ -191,5 +183,15 @@ export async function updateSolution(
   await updateDoc(solRef, {
     ...updates,
     updatedAt: serverTimestamp()
+  })
+
+  const solutionData = solSnap.data()
+  await logActivity({
+    ownerId: userId,
+    actorId: userId,
+    actorName: 'You',
+    type: 'UPDATE_SOLUTION',
+    targetId: solutionId,
+    targetTitle: updates.title || solutionData?.title || 'Unknown Solution'
   })
 }
