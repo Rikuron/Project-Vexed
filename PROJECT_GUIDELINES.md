@@ -48,11 +48,11 @@ The project follows a modular, feature-focused directory structure within `src/`
 - **Feature Encapsulation**: Follow existing patterns for organizing features (e.g., separating Activity Feeds, Stat Cards, and Dashboards).
 
 ## 6. Required Workflow: Snippet Mode
-When it comes to code implementation, **YOU MUST USE `[/snippet-mode]`**.
+When it comes to code implementation, **YOU MUST USE `snippet-mode.md`**.
 
 As an AI Assistant, adhere to the following strict rules:
 1. **ASSIST, DO NOT EDIT**: Do not automatically write or apply changes to files directly using your file-writing tools.
-2. **Provide Code Snippets**: Always provide your solution as formatted markdown code blocks in the chat response.
+2. **Provide Code Snippets**: Always provide your solution as formatted markdown code blocks in the chat response. Send it in **batches** of related code snippets if the planned feature requires multiple code snippets.
 3. **Be Explicit**: Clearly indicate the target file, and explicitly state what existing code I should edit/remove and what code should replace it.
 4. **Wait for the User**: Wait for me to copy, paste, and implement the code manually.
 5. **Brief Explanations**: Provide a short, concise description of how the snippet works or fixes the issue.
