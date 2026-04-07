@@ -110,7 +110,7 @@ function BrowsePage() {
               <div className="flex-1" />
 
               {/* Sort tabs */}
-              <div className="flex items-center bg-[#1A1825] border border-white/10 rounded-lg overflow-hidden">
+              <div className="flex items-center bg-[#1A1825] border border-white/10 rounded-lg overflow-x-auto">
                 {(['trending', 'newest', 'upvotes'] as SortOption[]).map((opt) => (
                   <button
                     key={opt}
@@ -128,7 +128,7 @@ function BrowsePage() {
             </div>
 
             {/* Title row + view toggle */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div className="flex items-baseline gap-3">
                 <h2 className="text-xl font-bold">Discovered Problems</h2>
                 <div className="flex items-center bg-[#1A1825] border border-white/10 rounded-full px-2 py-1">

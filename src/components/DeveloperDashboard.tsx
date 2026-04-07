@@ -47,21 +47,21 @@ export default function DeveloperDashboard() {
   return (
     <div className="min-h-screen bg-vexed-bg2 text-white p-6 lg:p-10 font-sans overflow-hidden relative">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[7.5%] left-[12.5%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
-        <div className="absolute bottom-[5%] right-[7.5%] translate-x-1/4 translate-y-1/4 w-[650px] h-[650px] rounded-full bg-vexed-highlight1/15 blur-[150px]" />
+        <div className="absolute top-[7.5%] left-[12.5%] -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
+        <div className="absolute bottom-[5%] right-[7.5%] translate-x-1/4 translate-y-1/4 w-[350px] sm:w-[650px] h-[350px] sm:h-[650px] rounded-full bg-vexed-highlight1/15 blur-[150px]" />
       </div>
 
       <div className="max-w-[1400px] mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-2xl font-extrabold tracking-tight">Developer Dashboard</h1>
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">Developer Dashboard</h1>
+          <div className="flex items-center gap-3 sm:gap-4">
             <button className="relative p-2 text-slate-400 hover:text-white transition-colors" aria-label="Notifications">
               <Bell size={20} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-[#553CFF] rounded-full" />
             </button>
             <Link
               to="/browse"
-              className="bg-vexed-highlight1 hover:bg-vexed-highlight3 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_var(--color-vexed-highlight1)] hover:shadow-[0_0_20px_var(--color-vexed-highlight3)]"
+              className="bg-vexed-highlight1 hover:bg-vexed-highlight3 text-white px-3 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_var(--color-vexed-highlight1)] hover:shadow-[0_0_20px_var(--color-vexed-highlight3)]"
             >
               <CirclePlus size={16} /> Claim New Vexation
             </Link>

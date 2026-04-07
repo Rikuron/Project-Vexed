@@ -85,7 +85,7 @@ function MyVexationsPage() {
           </div>
 
           {/* Stats cards */}
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 px-4 py-2 text-center">
               <p className="text-xs uppercase tracking-wider text-indigo-400">Total</p>
               <p className="text-2xl font-bold text-white">{totalCount}</p>
@@ -137,7 +137,7 @@ function MyVexationsPage() {
         ) : (
           <div className="rounded-xl border border-slate-700/50 overflow-hidden">
             {/* Table header */}
-            <div className="grid grid-cols-12 gap-4 bg-slate-800/50 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+            <div className="hidden sm:grid grid-cols-12 gap-4 bg-slate-800/50 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
               <span className="col-span-5">Problem Title</span>
               <span className="col-span-2">Status</span>
               <span className="col-span-2">Upvotes</span>
@@ -150,28 +150,30 @@ function MyVexationsPage() {
                 key={vex.id}
                 to="/vexation/$id"
                 params={{ id: vex.id }}
-                className="grid grid-cols-12 gap-4 items-center px-5 py-4 border-t border-slate-800 hover:bg-slate-800/30 transition-colors group"
+                className="flex flex-col gap-2 px-5 py-4 border-t border-slate-800 hover:bg-slate-800/30 transition-colors group sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center"
               >
-                <div className="col-span-5 flex items-center gap-3 min-w-0">
+                <div className="sm:col-span-5 flex items-center gap-3 min-w-0">
                   <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
                   <span className="text-sm text-white font-medium truncate group-hover:text-indigo-300 transition-colors">
                     {vex.title}
                   </span>
                 </div>
-                <div className="col-span-2">
-                  <span
-                    className={`inline-block rounded-md px-2 py-0.5 text-xs font-semibold uppercase ${
-                      STATUS_STYLES[vex.status] || STATUS_STYLES.Pending
-                    }`}
-                  >
-                    {vex.status}
-                  </span>
-                </div>
-                <div className="col-span-2 text-sm text-gray-400">
-                  {vex.upvotes}
-                </div>
-                <div className="col-span-3 text-sm text-gray-500">
-                  {formatDate(vex.createdAt)}
+                <div className="flex items-center gap-3 sm:contents pl-5 sm:pl-0">
+                  <div className="sm:col-span-2">
+                    <span
+                      className={`inline-block rounded-md px-2 py-0.5 text-xs font-semibold uppercase ${
+                        STATUS_STYLES[vex.status] || STATUS_STYLES.Pending
+                      }`}
+                    >
+                      {vex.status}
+                    </span>
+                  </div>
+                  <div className="sm:col-span-2 text-sm text-gray-400">
+                    {vex.upvotes} upvotes
+                  </div>
+                  <div className="sm:col-span-3 text-sm text-gray-500 ml-auto sm:ml-0">
+                    {formatDate(vex.createdAt)}
+                  </div>
                 </div>
               </Link>
             ))}

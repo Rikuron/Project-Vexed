@@ -73,7 +73,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           className="flex flex-col flex-1 min-w-0 transition-all duration-300"
           style={{ paddingLeft: `var(--sidebar-offset, 0px)` }}
         >
-          <main className="flex-1">
+          <main className="flex-1 pt-14 lg:pt-0">
             {children}
           </main>
         </div>
