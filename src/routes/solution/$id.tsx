@@ -122,7 +122,7 @@ function SolutionDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-vexed-bg2 text-white p-8 lg:p-12 font-sans">
+    <div className="min-h-screen bg-vexed-bg2 text-white p-4 sm:p-8 lg:p-12 font-sans">
       <div className="flex items-center justify-between mb-8">
         <Link to="/portfolio" className="inline-flex items-center gap-2 text-sm text-vexed-dim hover:text-white transition-colors">
           <ArrowLeft size={16} /> Back to Portfolio
@@ -142,7 +142,7 @@ function SolutionDetailPage() {
       {/* Header featuring Upvote Button */}
       <div className="mb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div>
-          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-4">{solution.title}</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-4">{solution.title}</h1>
           <p className="text-lg text-vexed-dim leading-relaxed">{solution.description}</p>
         </div>
 

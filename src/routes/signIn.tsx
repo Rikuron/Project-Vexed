@@ -70,7 +70,7 @@ function SignInPage() {
       <BrandSide />
 
       {/* Right Column (Form) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 mr-16 relative w-full">
+      <div className="flex-1 flex flex-col justify-center items-center p-4 sm:p-8 lg:mr-16 relative w-full">
         
         <div className="w-full flex flex-col items-center max-w-[440px]">
           
@@ -129,7 +129,6 @@ function SignInPage() {
                 </div>
               )}
 
-              {/* NEW: DISPLAY NAME FIELD (Only for Sign Up) */}
               {isSignUp && (
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold tracking-widest text-slate-400">

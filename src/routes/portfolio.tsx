@@ -62,11 +62,11 @@ function PortfolioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-vexed-bg2 text-white p-8 lg:p-12 font-sans">
+    <div className="min-h-screen bg-vexed-bg2 text-white p-4 sm:p-8 lg:p-12 font-sans">
       <div className="max-w-[1200px] mx-auto">
         
         {/* Header */}
-        <h1 className="text-4xl font-extrabold tracking-tight mb-3">Portfolio</h1>
+        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">Portfolio</h1>
         <p className="text-base text-vexed-dim mb-10 max-w-2xl leading-relaxed">
           Showcase of my technical contributions, architecture designs, and validated problem-solving within the Vexed ecosystem.
         </p>
@@ -96,7 +96,7 @@ function PortfolioPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {activeProjects.map((project) => (
                 <div key={project.id} className="bg-vexed-bg1 border border-vexed-accent2 rounded-2xl overflow-hidden group">
-                  <div className="h-44 bg-vexed-bg4 p-6 relative flex items-center justify-center border-b border-vexed-accent2">
+                  <div className="h-32 sm:h-44 bg-vexed-bg4 p-6 relative flex items-center justify-center border-b border-vexed-accent2">
                     <div className="w-[80%] h-16 bg-white/5 rounded-lg"></div>
                   </div>
                   <div className="p-7">

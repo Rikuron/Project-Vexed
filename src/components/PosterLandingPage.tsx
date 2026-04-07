@@ -36,7 +36,7 @@ export default function PosterLandingPage() {
     <div className="h-screen flex flex-col bg-vexed-bg2 overflow-hidden">
       {/* Background Overlay */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[27.5%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[715px] h-[715px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
+        <div className="absolute top-[27.5%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[715px] h-[400px] sm:h-[715px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
       </div>
 
       {/* Top bar */}
@@ -52,7 +52,7 @@ export default function PosterLandingPage() {
 
       {/* Hero */}
       <section className="relative flex-1 flex flex-col items-center justify-center px-6 text-center">
-        <h1 className="relative text-4xl md:text-5xl font-extrabold text-white mb-1">
+        <h1 className="relative text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-1">
           What is{' '}
           <span className="bg-linear-to-r from-vexed-highlight1 to-vexed-highlight2 bg-clip-text text-transparent">
             broken
@@ -64,7 +64,7 @@ export default function PosterLandingPage() {
         </p>
 
         {/* Search bar */}
-        <div className="relative w-[75%] mb-6 group">
+        <div className="relative w-[95%] sm:w-[85%] md:w-[75%] mb-6 group">
           <div className="absolute -inset-[0.5px] rounded-xl bg-linear-to-r from-vexed-highlight1 via-vexed-highlight3 to-vexed-highlight1 blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300" />
           <div className="relative rounded-xl bg-slate-800/90">
             <Plus size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />

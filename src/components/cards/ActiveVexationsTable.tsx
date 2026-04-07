@@ -26,7 +26,7 @@ export default function ActiveVexationsTable({ projects, loading }: ActiveVexati
         </Link>
       </div>
       <div className="bg-[#151320] border border-white/5 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 px-6 py-3 border-b border-white/5 text-[10px] font-bold tracking-widest uppercase text-slate-500">
+        <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 px-6 py-3 border-b border-white/5 text-[10px] font-bold tracking-widest uppercase text-slate-500">
           <span>Problem Name</span>
           <span>Status</span>
           <span>Difficulty</span>
@@ -42,19 +42,19 @@ export default function ActiveVexationsTable({ projects, loading }: ActiveVexati
           activeProjects.map((project) => (
             <div
               key={project.id}
-              className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 px-6 py-4 items-center border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors"
+              className="flex flex-col gap-2 px-6 py-4 border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] sm:gap-4 sm:items-center"
             >
               <div>
                 <p className="text-sm font-semibold text-white truncate pr-2">{project.title}</p>
                 <p className="text-[11px] text-slate-500 font-medium">ID: #{project.id.slice(0, 6)}</p>
               </div>
-              <div>
+              <div className="flex items-center gap-3 sm:contents">
                 <span className={`inline-flex px-2.5 py-1 rounded text-[10px] font-bold border ${statusStyles[project.status || 'Claimed'] || statusStyles['Claimed']}`}>
                   {(project.status || 'IN PROGRESS').toUpperCase()}
                 </span>
+                <span className="text-sm text-slate-300">{project.technicalComplexity || 'N/A'}</span>
+                <span className="text-sm text-slate-300 hidden sm:inline">N/A</span>
               </div>
-              <span className="text-sm text-slate-300">{project.technicalComplexity || 'N/A'}</span>
-              <span className="text-sm text-slate-300">N/A</span>
               <Link
                 to={`/vexation/$id`}
                 params={{ id: project.id }}

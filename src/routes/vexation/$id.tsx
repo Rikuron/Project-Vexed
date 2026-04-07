@@ -237,7 +237,7 @@ function VexationDetailPage() {
     <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Breadcrumb + actions bar */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <Link to="/browse" className="hover:text-white transition-colors">
               Vexations
@@ -311,7 +311,7 @@ function VexationDetailPage() {
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
               {vexation.title}
             </h1>
 
