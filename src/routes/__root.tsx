@@ -67,13 +67,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen overflow-x-hidden">
         <Sidebar />
         <div
           className="flex flex-col flex-1 min-w-0 transition-all duration-300"
           style={{ paddingLeft: `var(--sidebar-offset, 0px)` }}
         >
-          <main className="flex-1 pt-14 lg:pt-0">
+          <main className="flex-1">
             {children}
           </main>
         </div>

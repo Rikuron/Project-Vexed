@@ -59,7 +59,7 @@ function BrowsePage() {
         <div className="flex flex-col lg:flex-row">
 
           {/* Left: main content area */}
-          <div className="flex-1 min-w-0 px-6 py-8 md:px-10">
+          <div className="flex-1 min-w-0 px-4 sm:px-6 py-8 md:px-10">
 
             {/* Search Bar + Submit */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
@@ -107,7 +107,7 @@ function BrowsePage() {
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
               </div>
 
-              <div className="flex-1" />
+              <div className="hidden sm:block flex-1" />
 
               {/* Sort tabs */}
               <div className="flex items-center bg-[#1A1825] border border-white/10 rounded-lg overflow-x-auto">

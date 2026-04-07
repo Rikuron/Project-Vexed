@@ -99,7 +99,7 @@ function ClaimedVexationsPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight mb-2">Your Vexations</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">Your Vexations</h1>
             <p className="text-sm text-slate-400">
               You have <span className="text-[#553CFF] font-semibold">{claimedVexations.length || 12} active</span> challenges currently in progress.
             </p>
@@ -138,7 +138,7 @@ function ClaimedVexationsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-8 border-b border-white/10 mb-8 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-4 sm:gap-8 border-b border-white/10 mb-8 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}

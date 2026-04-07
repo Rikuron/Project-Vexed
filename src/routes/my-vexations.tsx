@@ -78,7 +78,7 @@ function MyVexationsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-1">My Vexations</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">My Vexations</h1>
             <p className="text-gray-400">
               Manage, track, and refine the problems you've identified.
             </p>
