@@ -98,7 +98,7 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-vexed-dim uppercase tracking-wider mb-2">Repository URL</label>
               <input 
@@ -121,7 +121,7 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-vexed-dim uppercase tracking-wider mb-2">Date Started *</label>
               <input 
@@ -142,44 +142,43 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
                 placeholder="e.g. React, Node.js, Redis"
               />
             </div>
+          </div>
 
-            {/* Image Upload Section */}
-            <div className="pt-2">
-              <label className="block text-xs font-semibold text-vexed-dim uppercase tracking-wider mb-2">Screenshots & Images</label>
-              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-sm font-semibold text-gray-300 w-full text-center">
-                <UploadCloud size={18} />
-                Select Images
-                <input 
-                  type="file" 
-                  multiple 
-                  accept="image/*" 
-                  className="hidden" 
-                  onChange={handleFileChange} 
-                />
-              </label>
+          {/* Image Upload Section — pulled out of the grid */}
+          <div>
+            <label className="block text-xs font-semibold text-vexed-dim uppercase tracking-wider mb-2">Screenshots & Images</label>
+            <label className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-sm font-semibold text-gray-300 w-full text-center">
+              <UploadCloud size={18} />
+              Select Images
+              <input 
+                type="file" 
+                multiple 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleFileChange} 
+              />
+            </label>
 
-              {imageFiles.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4 p-4 border border-slate-800 bg-slate-900/50 rounded-lg">
-                  {imageFiles.map((file, idx) => (
-                    <div key={idx} className="relative group rounded-md overflow-hidden bg-slate-800 shrink-0">
-                      <img 
-                        src={URL.createObjectURL(file)} 
-                        alt="Preview" 
-                        className="h-16 w-16 object-cover opacity-80 group-hover:opacity-40 transition-opacity"
-                      />
-                      <button 
-                        type="button" 
-                        onClick={() => removeFile(idx)}
-                        className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer"
-                      >
-                        <X size={20} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
+            {imageFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4 p-4 border border-slate-800 bg-slate-900/50 rounded-lg">
+                {imageFiles.map((file, idx) => (
+                  <div key={idx} className="relative group rounded-md overflow-hidden bg-slate-800 shrink-0">
+                    <img 
+                      src={URL.createObjectURL(file)} 
+                      alt="Preview" 
+                      className="h-16 w-16 object-cover opacity-80 group-hover:opacity-40 transition-opacity"
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => removeFile(idx)}
+                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-vexed-accent2 mt-6">

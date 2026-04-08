@@ -60,7 +60,7 @@ export default function SubmitVerifyModal({
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
           {/* Original Content */}
           <div className="space-y-4">
             <div>
@@ -142,18 +142,18 @@ export default function SubmitVerifyModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-slate-700/50 px-6 py-4 bg-slate-800/30 rounded-b-xl">
+        <div className="flex items-center justify-between gap-3 border-t border-slate-700/50 px-4 sm:px-6 py-4 bg-slate-800/30 rounded-b-xl">
           <button
             onClick={onCancel}
             disabled={isSaving}
-            className="px-5 py-2.5 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            className="flex-1 flex items-center gap-2 rounded-lg bg-red-600/10 border-2 border-red-600/50 hover:bg-red-500/60 disabled:bg-slate-700 disabled:text-gray-500 px-6 py-2.5 text-sm font-medium text-red-400 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-gray-500 px-6 py-2.5 text-sm font-medium text-white transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-gray-500 px-6 py-2.5 text-sm font-medium text-white transition-colors whitespace-nowrap"
           >
             {isSaving ? (
               <><Loader2 size={16} className="animate-spin" /> Saving...</>

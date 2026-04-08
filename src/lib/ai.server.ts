@@ -22,6 +22,7 @@ export const analyzeProblem = createServerFn({ method: 'POST' })
         },
         body: JSON.stringify({
           model: 'minimax/minimax-m2.5',
+          max_tokens: 1024,
           messages: [
             {
               role: 'system',
@@ -91,6 +92,7 @@ export const validateProblemEdit = createServerFn({ method: 'POST' })
         },
         body: JSON.stringify({
           model: 'minimax/minimax-m2.5',
+          max_tokens: 1024,
           messages: [
             { 
               role: 'system',

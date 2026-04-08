@@ -10,18 +10,19 @@ interface SubmitSuccessProps {
 
 export default function SubmitSuccess({ createdId, aiResult, onReset }: SubmitSuccessProps) {
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 sm:px-6 pt-14 sm:pt-0 relative overflow-hidden">
       {/* Background Overlay */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[27.5%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[715px] h-[715px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
+        <div className="absolute top-[27.5%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[715px] h-[300px] sm:h-[715px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-lg w-full text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10">
-          <CheckCircle2 size={40} className="text-emerald-400" />
+        <div className="mx-auto mb-6 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-500/10">
+          <CheckCircle2 size={32} className="text-emerald-400 sm:hidden" />
+          <CheckCircle2 size={40} className="text-emerald-400 hidden sm:block" />
         </div>
-        <h1 className="text-3xl font-bold text-white mb-3">Vexation Submitted!</h1>
-        <p className="text-gray-400 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Vexation Submitted!</h1>
+        <p className="text-sm sm:text-base text-gray-400 mb-8">
           Your problem has been analyzed by AI and is now live for developers to discover.
         </p>
 

@@ -33,11 +33,11 @@ export default function SubmitForm({
         <div className="absolute top-[27.5%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[715px] h-[400px] sm:h-[715px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pt-22 md:pt-16 pb-10 sm:pb-16">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2">Submit a Vexation</h1>
-          <p className="text-gray-400">
+        <div className="mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Submit a Vexation</h1>
+          <p className="text-sm sm:text-base text-gray-400">
             Describe a real-world problem you've encountered. Our AI will categorize it and make it
             discoverable for developers looking for project ideas.
           </p>
@@ -93,11 +93,11 @@ export default function SubmitForm({
 
           {/* Error message */}
           {state === 'error' && (
-            <div className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 overflow-hidden">
               <AlertCircle size={18} className="shrink-0 mt-0.5" />
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium">Submission failed</p>
-                <p className="text-red-400/80">{errorMsg}</p>
+                <p className="text-red-400/80 wrap-break-word">{errorMsg}</p>
               </div>
             </div>
           )}
