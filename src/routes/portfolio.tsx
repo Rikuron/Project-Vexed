@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Rocket, ExternalLink, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react'
+import { Rocket, ExternalLink, CheckCircle2, ChevronRight } from 'lucide-react'
 import { getClaimedVexations, getSolutionsBySolver } from '../lib/db'
 import { useAuth } from '../lib/auth/AuthContext'
 import type { Vexation, Solution } from '../types'
+import LoadingScreen from '@/components/LoadingScreen'
 
 export const Route = createFileRoute('/portfolio')({
   component: PortfolioPage,
@@ -47,7 +48,7 @@ function PortfolioPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-vexed-bg2 flex items-center justify-center">
-        <Loader2 className="animate-spin text-vexed-primary" size={40} />
+        <LoadingScreen />
       </div>
     )
   }
@@ -62,8 +63,8 @@ function PortfolioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-vexed-bg2 text-white p-4 sm:p-8 lg:p-12 font-sans">
-      <div className="max-w-[1200px] mx-auto">
+    <div className="min-h-screen bg-[#0D0C15] text-white px-6 py-8 md:px-10 lg:px-12 font-sans">
+      <div className="max-w-[1400px] mx-auto">
         
         {/* Header */}
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">Portfolio</h1>

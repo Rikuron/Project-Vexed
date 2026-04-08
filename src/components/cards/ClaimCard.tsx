@@ -17,7 +17,7 @@ export default function ClaimCard({ vexation, variant }: ClaimCardProps) {
   const isClaimed = variant === 'claimed'
 
   return (
-    <div className="bg-[#0D0C15] border border-white/5 hover:border-white/10 transition-colors rounded-xl p-6 flex flex-col group h-full">
+    <div className="bg-[#1A1825] border border-white/5 hover:border-white/10 transition-colors rounded-xl p-6 flex flex-col group h-full">
       {/* Top row: Status and Time */}
       <div className="flex items-center justify-between mb-4 mt-1">
         <div className={`flex items-center gap-2 text-[10px] font-bold tracking-widest ${isClaimed ? 'text-[#D4B853]' : 'text-emerald-400'}`}>
