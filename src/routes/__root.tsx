@@ -4,9 +4,10 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { AuthProvider, useAuth } from '../lib/auth/AuthContext'
 import { SidebarProvider, useSidebar } from '../lib/sidebar'
 import Sidebar from '../components/Sidebar'
-
+import MobileHeader from '../components/MobileHeader'
+import MobileBottomNav from '../components/MobileBottomNav'
+import LoadingScreen from '../components/LoadingScreen'
 import appCss from '../styles.css?url'
-import LoadingScreen from '@/components/LoadingScreen'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -67,10 +68,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <MobileHeader />
       <div className="flex min-h-screen overflow-x-hidden">
         <Sidebar />
         <div
-          className="flex flex-col flex-1 min-w-0 transition-all duration-300"
+          className="flex flex-col flex-1 min-w-0 transition-all duration-300 pt-14 pb-16 lg:pt-0 lg:pb-0"
           style={{ paddingLeft: `var(--sidebar-offset, 0px)` }}
         >
           <main className="flex-1">
@@ -78,6 +80,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </main>
         </div>
       </div>
+      <MobileBottomNav />
       <style>{`
         @media (min-width: 1024px) {
           :root { --sidebar-offset: ${collapsed ? 64 : 230}px; }
