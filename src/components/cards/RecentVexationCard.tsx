@@ -23,7 +23,7 @@ export default function RecentVexationCard({ vexation: vex }: { vexation: Vexati
     <Link
       to="/vexation/$id"
       params={{ id: vex.id }}
-      className="group rounded-xl border border-vexed-accent2 bg-vexed-bg1 p-5 hover:border-vexed-highlight3/40 hover:bg-vexed-bg1/80 transition-all duration-200"
+      className="block h-full group rounded-xl border border-vexed-accent2 bg-vexed-bg1 p-5 hover:border-vexed-highlight3/40 hover:bg-vexed-bg1/80 transition-all duration-200"
     >
       {/* Category badge + time */}
       <div className="flex items-center justify-between mb-3">
