@@ -26,11 +26,11 @@ export default function RecentVexationCard({ vexation: vex }: { vexation: Vexati
       className="block h-full group rounded-xl border border-vexed-accent2 bg-vexed-bg1 p-5 hover:border-vexed-highlight3/40 hover:bg-vexed-bg1/80 transition-all duration-200"
     >
       {/* Category badge + time */}
-      <div className="flex items-center justify-between mb-3">
-        <span className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${getCategoryStyle(vex.category)}`}>
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <span className={`max-w-[75%] rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${getCategoryStyle(vex.category)}`}>
           {vex.category || vex.sector}
         </span>
-        <span className="text-xs text-gray-500">{formatTimeAgo(vex.createdAt)}</span>
+        <span className="text-xs text-gray-500 shrink-0">{formatTimeAgo(vex.createdAt)}</span>
       </div>
 
       {/* Title */}

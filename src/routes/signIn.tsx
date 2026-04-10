@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../lib/auth/AuthContext'
 import type { UserRole } from '../types'
 
@@ -70,8 +70,17 @@ function SignInPage() {
       <BrandSide />
 
       {/* Right Column (Form) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-4 sm:p-8 lg:mr-16 relative w-full">
+      <div className="flex-1 flex flex-col justify-center items-center p-8 lg:mr-16 relative w-full">
         
+        {/* Mobile back link (hidden on desktop where BrandSide handles it) */}
+        <button
+          onClick={() => navigate({ to: '/' })}
+          className="lg:hidden absolute top-6 left-6 flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white cursor-pointer transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Back to home
+        </button>
+
         <div className="w-full flex flex-col items-center max-w-[440px]">
           
           {/* Anonymous Tip */}

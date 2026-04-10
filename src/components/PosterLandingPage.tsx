@@ -26,7 +26,7 @@ export default function PosterLandingPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-vexed-bg2 overflow-hidden relative">
+    <div className="h-[calc(100dvh-3.5rem)] -mb-16 lg:h-screen lg:mb-0 flex flex-col bg-vexed-bg2 overflow-hidden relative">
       {/* Background Overlay */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[715px] h-[400px] sm:h-[715px] rounded-full bg-vexed-highlight1/20 blur-[120px]" />
