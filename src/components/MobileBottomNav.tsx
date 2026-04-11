@@ -22,7 +22,7 @@ export default function MobileBottomNav() {
         </>
       ) : (
         <>
-          <BottomNavLink to="/my-vexations" icon={<FileText size={20} />} label="Vexations" />
+          <BottomNavLink to="/my/vexations" icon={<FileText size={20} />} label="Vexations" />
           <BottomNavLink to="/my/saved" icon={<Bookmark size={20} />} label="Saved" />
           <BottomNavLink to="/browse" icon={<TrendingUp size={20} />} label="Trending" />
           <BottomNavLink to="/submit" icon={<CirclePlus size={20} />} label="New" search={{ prefill: '' }} />

@@ -12,12 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SignInRouteImport } from './routes/signIn'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as MyVexationsRouteImport } from './routes/my-vexations'
 import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VexationIdRouteImport } from './routes/vexation/$id'
 import { Route as SolutionIdRouteImport } from './routes/solution/$id'
+import { Route as MyVexationsRouteImport } from './routes/my/vexations'
 import { Route as MySavedRouteImport } from './routes/my/saved'
 import { Route as MyClaimedRouteImport } from './routes/my/claimed'
 
@@ -34,11 +34,6 @@ const SignInRoute = SignInRouteImport.update({
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyVexationsRoute = MyVexationsRouteImport.update({
-  id: '/my-vexations',
-  path: '/my-vexations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompleteProfileRoute = CompleteProfileRouteImport.update({
@@ -66,6 +61,11 @@ const SolutionIdRoute = SolutionIdRouteImport.update({
   path: '/solution/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyVexationsRoute = MyVexationsRouteImport.update({
+  id: '/my/vexations',
+  path: '/my/vexations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MySavedRoute = MySavedRouteImport.update({
   id: '/my/saved',
   path: '/my/saved',
@@ -81,12 +81,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
-  '/my-vexations': typeof MyVexationsRoute
   '/portfolio': typeof PortfolioRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
+  '/my/vexations': typeof MyVexationsRoute
   '/solution/$id': typeof SolutionIdRoute
   '/vexation/$id': typeof VexationIdRoute
 }
@@ -94,12 +94,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
-  '/my-vexations': typeof MyVexationsRoute
   '/portfolio': typeof PortfolioRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
+  '/my/vexations': typeof MyVexationsRoute
   '/solution/$id': typeof SolutionIdRoute
   '/vexation/$id': typeof VexationIdRoute
 }
@@ -108,12 +108,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
-  '/my-vexations': typeof MyVexationsRoute
   '/portfolio': typeof PortfolioRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
   '/my/saved': typeof MySavedRoute
+  '/my/vexations': typeof MyVexationsRoute
   '/solution/$id': typeof SolutionIdRoute
   '/vexation/$id': typeof VexationIdRoute
 }
@@ -123,12 +123,12 @@ export interface FileRouteTypes {
     | '/'
     | '/browse'
     | '/complete-profile'
-    | '/my-vexations'
     | '/portfolio'
     | '/signIn'
     | '/submit'
     | '/my/claimed'
     | '/my/saved'
+    | '/my/vexations'
     | '/solution/$id'
     | '/vexation/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -136,12 +136,12 @@ export interface FileRouteTypes {
     | '/'
     | '/browse'
     | '/complete-profile'
-    | '/my-vexations'
     | '/portfolio'
     | '/signIn'
     | '/submit'
     | '/my/claimed'
     | '/my/saved'
+    | '/my/vexations'
     | '/solution/$id'
     | '/vexation/$id'
   id:
@@ -149,12 +149,12 @@ export interface FileRouteTypes {
     | '/'
     | '/browse'
     | '/complete-profile'
-    | '/my-vexations'
     | '/portfolio'
     | '/signIn'
     | '/submit'
     | '/my/claimed'
     | '/my/saved'
+    | '/my/vexations'
     | '/solution/$id'
     | '/vexation/$id'
   fileRoutesById: FileRoutesById
@@ -163,12 +163,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
   CompleteProfileRoute: typeof CompleteProfileRoute
-  MyVexationsRoute: typeof MyVexationsRoute
   PortfolioRoute: typeof PortfolioRoute
   SignInRoute: typeof SignInRoute
   SubmitRoute: typeof SubmitRoute
   MyClaimedRoute: typeof MyClaimedRoute
   MySavedRoute: typeof MySavedRoute
+  MyVexationsRoute: typeof MyVexationsRoute
   SolutionIdRoute: typeof SolutionIdRoute
   VexationIdRoute: typeof VexationIdRoute
 }
@@ -194,13 +194,6 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-vexations': {
-      id: '/my-vexations'
-      path: '/my-vexations'
-      fullPath: '/my-vexations'
-      preLoaderRoute: typeof MyVexationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/complete-profile': {
@@ -238,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolutionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my/vexations': {
+      id: '/my/vexations'
+      path: '/my/vexations'
+      fullPath: '/my/vexations'
+      preLoaderRoute: typeof MyVexationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my/saved': {
       id: '/my/saved'
       path: '/my/saved'
@@ -259,12 +259,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
   CompleteProfileRoute: CompleteProfileRoute,
-  MyVexationsRoute: MyVexationsRoute,
   PortfolioRoute: PortfolioRoute,
   SignInRoute: SignInRoute,
   SubmitRoute: SubmitRoute,
   MyClaimedRoute: MyClaimedRoute,
   MySavedRoute: MySavedRoute,
+  MyVexationsRoute: MyVexationsRoute,
   SolutionIdRoute: SolutionIdRoute,
   VexationIdRoute: VexationIdRoute,
 }

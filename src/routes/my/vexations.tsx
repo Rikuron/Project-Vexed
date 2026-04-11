@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
 import { Loader2, Plus, FileText } from 'lucide-react'
-import { getUserVexations } from '../lib/db'
-import { useAuth } from '../lib/auth/AuthContext'
-import type { Vexation, VexationStatus } from '../types'
+import { getUserVexations } from '../../lib/db'
+import { useAuth } from '../../lib/auth/AuthContext'
+import type { Vexation, VexationStatus } from '../../types'
 
-export const Route = createFileRoute('/my-vexations')({
+export const Route = createFileRoute('/my/vexations')({
   component: MyVexationsPage,
 })
 

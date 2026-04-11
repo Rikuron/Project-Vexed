@@ -82,7 +82,7 @@ export default function Sidebar() {
                   Personal
                 </p>
               )}
-              <NavLink to="/my-vexations" icon={<FileText size={16} />} label="My Vexations" collapsed={collapsed} />
+              <NavLink to="/my/vexations" icon={<FileText size={16} />} label="My Vexations" collapsed={collapsed} />
               <NavLink to="/my/saved" icon={<Bookmark size={16} />} label="Saved" collapsed={collapsed} />
             </div>
             <div className="space-y-1">
