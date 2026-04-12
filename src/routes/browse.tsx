@@ -82,7 +82,7 @@ function BrowsePage() {
             {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 z-10 " size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 z-10" size={18} />
                 <input
                   type="text"
                   placeholder="Search problems, sectors, or pain levels..."
@@ -191,11 +191,11 @@ function BrowsePage() {
                   className={
                     viewMode === 'grid'
                       ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5'
-                      : 'space-y-4'
+                      : 'space-y-3'
                   }
                 >
                   {paginatedVexations.map((vex) => (
-                    <BrowseCard key={vex.id} vexation={vex} />
+                    <BrowseCard key={vex.id} vexation={vex} variant={viewMode} />
                   ))}
                 </div>
 
