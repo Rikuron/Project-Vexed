@@ -45,7 +45,7 @@ export default function BrowseCard({ vexation }: { vexation: Vexation }) {
 
   return (
     <Link to="/vexation/$id" params={{ id: vexation.id }} className="block">
-      <div className="bg-[#151320] border border-white/5 hover:border-white/10 rounded-xl p-5 transition-all group h-full flex flex-col">
+      <div className="bg-vexed-bg1/50 border border-white/5 hover:border-vexed-highlight1/20 rounded-xl p-5 transition-all group h-full flex flex-col">
         {/* Sector badge */}
         <div className="flex items-center justify-between mb-3">
           <span className={`px-2.5 py-1 rounded text-[10px] font-bold tracking-widest uppercase ${sectorStyle}`}>
@@ -54,7 +54,7 @@ export default function BrowseCard({ vexation }: { vexation: Vexation }) {
         </div>
 
         {/* Title + Description */}
-        <h3 className="text-base font-bold text-white mb-1.5 leading-tight group-hover:text-indigo-300 transition-colors line-clamp-2">
+        <h3 className="text-base font-bold text-white mb-1.5 leading-tight group-hover:text-vexed-highlight2 transition-colors line-clamp-2">
           {vexation.title}
         </h3>
         <p className="text-[13px] text-slate-400 line-clamp-2 leading-relaxed mb-4 flex-1">
@@ -74,7 +74,7 @@ export default function BrowseCard({ vexation }: { vexation: Vexation }) {
             <span className="text-[10px] text-slate-500 font-medium">Pain Level: {vexation.severity}</span>
             <span className="text-[10px] text-slate-500 font-medium">{intensity}%</span>
           </div>
-          <div className="w-full bg-[#2A263D] h-1 rounded-full overflow-hidden">
+          <div className="w-full bg-vexed-accent2 h-1 rounded-full overflow-hidden">
             <div className={`${barColor} h-full rounded-full transition-all`} style={{ width: `${intensity}%` }} />
           </div>
         </div>
