@@ -51,7 +51,8 @@ function BrowsePage() {
         vex.description.toLowerCase().includes(searchQuery.toLowerCase())
       const matchSector = sectorFilter === 'All' || vex.sector === sectorFilter
       const matchComplexity = complexityFilter === 'Any' || vex.technicalComplexity === complexityFilter
-      return matchQuery && matchSector && matchComplexity
+      const notClosed = vex.status !== 'Closed'
+      return matchQuery && matchSector && matchComplexity && notClosed
     })
   }, [vexations, searchQuery, sectorFilter, complexityFilter])
 

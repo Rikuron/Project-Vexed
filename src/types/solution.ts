@@ -15,4 +15,6 @@ export interface Solution {
   upvotes?: number
   images?: string[]
   updatedAt?: Timestamp
+  status?: 'pending' | 'approved' | 'rejected'
+  approvedAt?: Timestamp
 }

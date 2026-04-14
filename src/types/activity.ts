@@ -7,6 +7,8 @@ export type ActivityType =
   | 'UPVOTE_SOLUTION'
   | 'SOLUTION_UPVOTED'
   | 'UPDATE_SOLUTION'
+  | 'APPROVE_SOLUTION'
+  | 'CLOSE_VEXATION'
 
 export interface Activity {
   id: string

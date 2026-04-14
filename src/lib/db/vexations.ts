@@ -92,6 +92,8 @@ export async function getVexations(
     constraints.push(where('technicalComplexity', '==', normalizeCase(filters.complexity)))
   }
 
+  constraints.push(where('status', 'in', ['Analyzed', 'Claimed', 'Solved']))
+
   // Sort order
   switch (filters.sortBy) {
     case 'upvotes':
@@ -289,7 +291,6 @@ export async function submitSolution(
   solutionUrl: string
 ): Promise<void> {
   await updateDoc(doc(db, 'vexations', vexationId), {
-    status: 'Solved',
     solutionUrl: arrayUnion(solutionUrl),
     updatedAt: serverTimestamp()
   })
@@ -314,4 +315,38 @@ export async function getClaimedVexations(userId: string): Promise<Vexation[]> {
     console.error(error.message)
     return []
   }
+}
+
+export async function closeVexation(
+  vexationId: string,
+  posterId: string,
+  posterName: string
+): Promise<void> {
+  const vexRef = doc(db, 'vexations', vexationId)
+  const vexSnap = await getDoc(vexRef)
+
+  if (!vexSnap.exists()) throw new Error('Vexation not found')
+  if (vexSnap.data()?.authorId !== posterId) throw new Error('Only the Poster can close this Vexation')
+
+  await updateDoc(vexRef, {
+    status: 'Closed',
+    closedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  })
+
+  const vexData = vexSnap.data()
+  const claimedSolvers: string[] = vexData?.claimedByID ?? []
+
+  await Promise.all(
+    claimedSolvers.map((solverId) => 
+      logActivity({
+        ownerId: solverId,
+        actorId: posterId,
+        actorName: posterName,
+        type: 'CLOSE_VEXATION',
+        targetId: vexationId,
+        targetTitle: vexData?.title ?? 'Unknown Vexation'
+      })
+    )
+  )
 }

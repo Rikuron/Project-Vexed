@@ -45,6 +45,8 @@ function getActivityStyle(item: GroupedActivity) {
       }
     }
     case 'UPDATE_SOLUTION': return { highlight: 'You updated', dot: 'bg-teal-400', ring: 'border-teal-500/20', text: 'text-teal-400' }
+    case 'APPROVE_SOLUTION': return { highlight: 'Your solution was approved:', dot: 'bg-emerald-400', ring: 'border-emerald-500 bg-emerald-500/20', text: 'text-emerald-400' }
+    case 'CLOSE_VEXATION': return { highlight: 'A vexation you claimed was closed:', dot: 'bg-slate-400', ring: 'border-slate-500 bg-slate-500/20', text: 'text-slate-400' }
     default: return { highlight: 'Activity', dot: 'bg-slate-400', ring: 'border-slate-500 bg-slate-500/20', text: 'text-slate-400' }
   }
 }

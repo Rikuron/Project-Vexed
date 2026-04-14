@@ -195,3 +195,47 @@ export async function updateSolution(
     targetTitle: updates.title || solutionData?.title || 'Unknown Solution'
   })
 }
+
+// Approve a solution / PUT
+export async function approveSolution(
+  solutionId: string,
+  vexationId: string,
+  posterId: string,
+  posterName: string
+): Promise<void> {
+  const solRef = doc(db, 'solutions', solutionId)
+  const solSnap = await getDoc(solRef)
+
+  if (!solSnap.exists()) throw new Error('Solution not found')
+
+  const solData = solSnap.data()
+  if (solData?.status === 'approved') throw new Error('Solution is already approved')
+
+  const vexRef = doc(db, 'vexations', vexationId)
+  const vexSnap = await getDoc(vexRef)
+
+  if (!vexSnap.exists()) throw new Error('Vexation not found')
+  if (vexSnap.data()?.authorId !== posterId) throw new Error('Only the Poster can approve solutions')
+
+  await updateDoc(solRef, {
+    status: 'approved',
+    approvedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  })
+
+  const { arrayUnion } = await import('firebase/firestore')
+  await updateDoc(vexRef, {
+    status: 'Solved',
+    approvedSolutionIds: arrayUnion(solutionId),
+    updatedAt: serverTimestamp()
+  })
+
+  await logActivity({
+    ownerId: solData.solverId,
+    actorId: posterId,
+    actorName: posterName,
+    type: 'APPROVE_SOLUTION',
+    targetId: solutionId,
+    targetTitle: solData.title || 'Unknown Solution'
+  })
+}

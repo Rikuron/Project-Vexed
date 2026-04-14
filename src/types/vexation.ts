@@ -47,6 +47,8 @@ export interface Vexation {
   solutionUrl?: string[] | null
   createdAt: Timestamp
   updatedAt: Timestamp
+  approvedSolutionIds?: string[]
+  closedAt?: Timestamp
 }
 
 export interface VexationFormData {

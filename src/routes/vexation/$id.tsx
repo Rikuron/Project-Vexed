@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
-import { 
-  ArrowBigUp, Bookmark, Share2, 
-  MessageSquare, Loader2, Pencil 
+import {
+  ArrowBigUp, Bookmark, Share2,
+  MessageSquare, Loader2, Pencil,
+  CheckCircle2, XCircle, ShieldCheck
 } from 'lucide-react'
-import { 
+import {
   getVexationById,
   upvoteVexation,
   toggleSaveVexation,
@@ -14,7 +15,9 @@ import {
   submitSolution,
   createSolution,
   getSolutionsForVexation,
-  updateVexation
+  updateVexation,
+  closeVexation,
+  approveSolution
 } from '../../lib/db'
 import { useAuth } from '../../lib/auth/AuthContext'
 import type { Vexation, Solution } from '../../types'
@@ -47,6 +50,8 @@ function VexationDetailPage() {
   const [solveLoading, setSolveLoading] = useState(false)
   const [isSubmitSolutionModalOpen, setIsSubmitSolutionModalOpen] = useState(false)
   const [isEditVexationModalOpen, setIsEditVexationModalOpen] = useState(false)
+  const [approveLoadingId, setApproveLoadingId] = useState<string | null>(null)
+  const [closeLoading, setCloseLoading] = useState(false)
   const viewCountedRef = useRef(false)
 
   // Fetch vexation data
@@ -194,7 +199,6 @@ function VexationDetailPage() {
 
       setVexation({
         ...vexation,
-        status: 'Solved',
         solutionUrl: [...(vexation.solutionUrl || []), primaryUrl]
       })
 
@@ -225,6 +229,53 @@ function VexationDetailPage() {
     } catch (error: any) {
       console.error('Failed to update vexation:', error)
       alert(error.message || 'Failed to update vexation. Please try again.')
+    }
+  }
+
+  async function handleApproveSolution(solutionId: string) {
+    if (!user || !vexation || approveLoadingId) return
+
+    setApproveLoadingId(solutionId)
+    try {
+      await approveSolution(
+        solutionId,
+        vexation.id,
+        user.uid,
+        user.displayName || 'Poster'
+      )
+
+      setSolutions((prev) => 
+        prev.map((s) => s.id === solutionId ? { ...s, status: 'approved' as const } : s)
+      )
+
+      setVexation({
+        ...vexation,
+        status: 'Solved',
+        approvedSolutionIds: [...(vexation.approvedSolutionIds || []), solutionId]
+      })
+    } catch (error: any) {
+      console.error('Failed to approve solution: ', error)
+      alert(error.message || 'Failed to approve solution.')
+    } finally {
+      setApproveLoadingId(null)
+    }
+  }
+
+  async function handleCloseVexation() {
+    if (!user || !vexation || closeLoading) return
+
+    const confirmed = window.confirm('Are you sure you want to close this vexation? It will be removed from the browse page.')
+    if (!confirmed) return
+
+    setCloseLoading(true)
+    try {
+      await closeVexation(vexation.id, user.uid, user.displayName || 'Poster')
+      setVexation({ ...vexation, status: 'Closed' })
+    } catch (error: any) {
+      console.error('Failed to close Vexation: ', error)
+      alert(error.message || 'Failed to close vexation.')
+    } finally {
+      setCloseLoading(false)
     }
   }
 
@@ -341,30 +392,111 @@ function VexationDetailPage() {
               />
             )}
 
+            {/* Poster Actions: Close Vexation */}
+            {isOwnPost && vexation.status !== 'Closed' && (
+              <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-vexed-bg1/50 p-4">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-white">Manage Vexation</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {vexation.status === 'Solved'
+                      ? 'This vexation has approved solutions. You can close it when satisfied.'
+                      : 'Close this vexation to remove it from the browse page.'}
+                  </p>
+                </div>
+                <button
+                  onClick={handleCloseVexation}
+                  disabled={closeLoading}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {closeLoading ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
+                  Close Vexation
+                </button>
+              </div>
+            )}
+
+            {/* Closed Banner */}
+            {vexation.status === 'Closed' && (
+              <div className="rounded-xl border border-slate-500/20 bg-slate-500/5 p-4 text-center">
+                <p className="text-sm font-semibold text-slate-400">This vexation has been closed by the poster.</p>
+              </div>
+            )}
+
             {/* Display Submitted Solutions */}
             {solutions.length > 0 && (
               <div className="pt-8 mb-6">
-                <h3 className="text-xl font-bold text-white mb-6">Submitted Solutions ({solutions.length})</h3>
+                <h3 className="text-xl font-bold text-white mb-6">
+                  Submitted Solutions ({solutions.length})
+                </h3>
                 <div className="space-y-4">
-                  {solutions.map(sol => (
-                    <Link to="/solution/$id" params={{ id: sol.id }} key={sol.id} className="block p-5 bg-linear-to-r from-vexed-bg1 to-transparent border border-vexed-accent2 rounded-xl hover:border-vexed-highlight1/50 transition-colors group">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-white group-hover:text-vexed-highlight2 transition-colors">{sol.title}</h4>
-                        <span className="text-xs text-vexed-dim">{sol.solverDisplayName}</span>
+                  {solutions.map((sol) => {
+                    const isApproved = sol.status === 'approved'
+
+                    return (
+                      <div
+                        key={sol.id}
+                        className={`p-5 border rounded-xl transition-colors ${
+                          isApproved
+                            ? 'bg-linear-to-r from-emerald-500/5 to-transparent border-emerald-500/20'
+                            : 'bg-linear-to-r from-vexed-bg1 to-transparent border-vexed-accent2'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <Link
+                            to="/solution/$id"
+                            params={{ id: sol.id }}
+                            className="group flex-1 min-w-0"
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              {isApproved && (
+                                <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+                              )}
+                              <h4 className="font-bold text-white group-hover:text-vexed-highlight2 transition-colors truncate">
+                                {sol.title}
+                              </h4>
+                            </div>
+                            <p className="text-sm text-vexed-dim line-clamp-2">{sol.description}</p>
+                          </Link>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isApproved ? (
+                              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
+                                <CheckCircle2 size={12} /> Approved
+                              </span>
+                            ) : isOwnPost && vexation.status !== 'Closed' ? (
+                              <button
+                                onClick={() => handleApproveSolution(sol.id)}
+                                disabled={approveLoadingId === sol.id}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+                              >
+                                {approveLoadingId === sol.id ? (
+                                  <Loader2 size={12} className="animate-spin" />
+                                ) : (
+                                  <CheckCircle2 size={12} />
+                                )}
+                                Approve
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-3">
+                          <span className="text-xs text-vexed-dim">
+                            by {sol.solverDisplayName}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {sol.techStack?.slice(0, 3).map((tech) => (
+                              <span
+                                key={tech}
+                                className="px-2 py-1 bg-vexed-bg3 border border-vexed-accent2 text-slate-300 rounded text-[10px] font-bold"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-sm text-vexed-dim line-clamp-2">{sol.description}</p>
-                      
-                      <div className="mt-4 flex items-center gap-2">
-                         {sol.techStack && sol.techStack.length > 0 && (
-                           sol.techStack.slice(0,3).map(tech => (
-                             <span key={tech} className="px-2 py-1 bg-vexed-bg3 border border-vexed-accent2 text-slate-300 rounded text-[10px] font-bold">
-                               {tech}
-                             </span>
-                           ))
-                         )}
-                      </div>
-                    </Link>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
