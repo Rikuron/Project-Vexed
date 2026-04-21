@@ -5,7 +5,6 @@ import {
   ChevronLeft, ChevronRight, Flame, Clock, ArrowUpRight,
 } from 'lucide-react'
 import { getVexations } from '../lib/db'
-import { DUMMY_VEXATIONS } from '../lib/dummyData'
 import { SECTORS } from '../types/vexation'
 import type { Vexation, Sector, Complexity } from '../types'
 import BrowseCard from '../components/cards/BrowseCard'
@@ -38,8 +37,11 @@ function BrowsePage() {
   useEffect(() => {
     setLoading(true)
     getVexations({ sortBy: sortOption })
-      .then((data) => setVexations(data.length > 0 ? data : DUMMY_VEXATIONS))
-      .catch(() => setVexations(DUMMY_VEXATIONS))
+      .then((data) => setVexations(data))
+      .catch((err) => {
+        console.error("Failed to fetch vexations: ", err)
+        setVexations([])
+      })
       .finally(() => setLoading(false))
   }, [sortOption])
 

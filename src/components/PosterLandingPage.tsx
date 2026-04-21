@@ -2,7 +2,6 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Sparkles, Plus } from 'lucide-react'
 import { getVexations } from '../lib/db'
-import { DUMMY_VEXATIONS } from '../lib/dummyData'
 import type { Vexation } from '../types'
 import RecentVexationCard from './cards/RecentVexationCard'
 
@@ -14,8 +13,11 @@ export default function PosterLandingPage() {
 
   useEffect(() => {
     getVexations({ sortBy: 'newest', limit: 3 })
-      .then((data) => setRecentVexations(data.length > 0 ? data : DUMMY_VEXATIONS))
-      .catch(() => setRecentVexations(DUMMY_VEXATIONS))
+      .then((data) => setRecentVexations(data))
+      .catch((err) => {
+        console.error("Failed to fetch recent vexations: ", err)
+        setRecentVexations([])
+      })
       .finally(() => setLoading(false))
   }, [])
 
