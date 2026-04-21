@@ -58,11 +58,11 @@ Developers browse a dynamic discovery feed of categorized problems. They can:
 | **Backend / DB** | Firebase (Firestore, Auth, Storage) |
 | **Server Functions** | Nitro-based server functions via `createServerFn` |
 | **AI Integration** | OpenRouter API (MiniMax M2.5) — categorization & moderation |
-| **Styling** | Tailwind CSS 4 + Custom Aurora Design System |
+| **Styling** | Tailwind CSS 4 + Custom Vexed Design System |
 | **Icons** | Lucide React |
 | **Testing** | Vitest + Testing Library |
 
-### Design System — *Aurora*
+### Design System — *Vexed*
 
 The UI is built on a custom dark-mode-first design system defined in `src/styles.css`, featuring:
 
@@ -115,7 +115,7 @@ src/
 │   ├── solution.ts
 │   ├── user.ts
 │   └── activity.ts
-└── styles.css            # Aurora design system tokens
+└── styles.css            # Vexed design system tokens
 ```
 
 ### Key Design Decisions
@@ -207,7 +207,7 @@ firebase deploy
 
 ## 🤝 Contributing
 
-1. **Styling** — Always defer to `src/styles.css` as the source of truth for all branding tokens and Aurora design system utilities.
+1. **Styling** — Always defer to `src/styles.css` as the source of truth for all branding tokens and Vexed design system utilities.
 2. **Type safety** — No unused variables. Strict TypeScript throughout.
 3. **Component architecture** — Keep components modular. DB logic stays in `src/lib/db/`, AI logic stays in `src/lib/ai.server.ts`.
 4. See `.agent/PROJECT_GUIDELINES.md` for the full coding policy.
