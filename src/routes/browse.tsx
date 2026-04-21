@@ -9,7 +9,6 @@ import { DUMMY_VEXATIONS } from '../lib/dummyData'
 import { SECTORS } from '../types/vexation'
 import type { Vexation, Sector, Complexity } from '../types'
 import BrowseCard from '../components/cards/BrowseCard'
-import TrendingSidebar from '../components/cards/TrendingSidebar'
 
 export const Route = createFileRoute('/browse')({
   component: BrowsePage,
@@ -244,11 +243,6 @@ function BrowsePage() {
                 )}
               </>
             )}
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="w-[25%] shrink-0 hidden lg:block border-l border-vexed-accent2 px-6 sticky top-0 h-screen overflow-hidden">
-            <TrendingSidebar />
           </div>
         </div>
       </div>

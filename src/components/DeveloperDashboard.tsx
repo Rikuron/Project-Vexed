@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { CheckCircle, ThumbsUp, Flame, Bell, CirclePlus } from 'lucide-react'
+import { CheckCircle, ArrowBigUp, Flame, Bell, CirclePlus } from 'lucide-react'
 import StatCard from './cards/StatCard'
 import ActivityFeed from './cards/ActivityFeed'
 import ActiveVexationsTable from './cards/ActiveVexationsTable'
@@ -78,8 +78,8 @@ export default function DeveloperDashboard() {
           <StatCard 
             label="Upvotes Received" 
             value={loading ? "..." : totalUpvotes.toString()}
-            changePercent="Static" 
-            icon={<ThumbsUp size={20} />} 
+            changePercent="Up to date" 
+            icon={<ArrowBigUp size={20} />} 
           />
           <StatCard 
             label="Current Streak" 

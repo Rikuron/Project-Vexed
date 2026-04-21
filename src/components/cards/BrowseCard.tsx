@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ThumbsUp, Eye, ChevronRight } from 'lucide-react'
+import { ArrowBigUp, Eye, ChevronRight } from 'lucide-react'
 import type { Vexation } from '../../types'
 
 const sectorColors: Record<string, string> = {
@@ -102,7 +102,7 @@ function GridCard({ vexation, sectorStyle }: { vexation: Vexation; sectorStyle: 
         <div className="border-t border-white/5 pt-3 flex items-center justify-between">
           <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium">
             <span className="flex items-center gap-1">
-              <ThumbsUp size={11} /> {formatCount(vexation.upvotes)}
+              <ArrowBigUp size={11} /> {formatCount(vexation.upvotes)}
             </span>
             <span className="flex items-center gap-1">
               <Eye size={11} /> {formatCount(vexation.viewCount)}
@@ -154,7 +154,7 @@ function ListRow({ vexation, sectorStyle }: { vexation: Vexation; sectorStyle: s
             {/* Stats */}
             <div className="flex items-center gap-2.5 text-[11px] text-slate-500 font-medium">
               <span className="flex items-center gap-1">
-                <ThumbsUp size={11} /> {formatCount(vexation.upvotes)}
+                <ArrowBigUp size={11} /> {formatCount(vexation.upvotes)}
               </span>
               <span className="flex items-center gap-1">
                 <Eye size={11} /> {formatCount(vexation.viewCount)}
