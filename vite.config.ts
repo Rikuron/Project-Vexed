@@ -16,7 +16,6 @@ const config = defineConfig({
   plugins: [
     devtools(),
     nitro({ 
-      preset: 'firebase',
       rollupConfig: { external: [/^@sentry\//] } 
     }),
     // this is the plugin that enables path aliases
