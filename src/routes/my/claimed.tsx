@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo } from 'react'
 import { 
-  Search, Plus, Zap, Target, Bookmark, 
-  CheckCircle2, Trophy 
+  Search, Plus, Zap, Target, 
+  Bookmark, CheckCircle2,
 } from 'lucide-react'
 import { useAuth } from '../../lib/auth/AuthContext'
-import { getClaimedVexations, getSavedVexations } from '../../lib/db'
-import type { Vexation } from '../../types'
+import { getClaimedVexations, getSavedVexations, getApprovedSolutionsBySolver, getVexationById } from '../../lib/db'
+import type { Vexation, Solution } from '../../types'
 import ClaimCard from '../../components/cards/ClaimCard'
 
 export const Route = createFileRoute('/my/claimed')({
@@ -17,6 +17,7 @@ function ClaimedVexationsPage() {
   const { user, userProfile } = useAuth()
   const [claimedVexations, setClaimedVexations] = useState<Vexation[]>([])
   const [bookmarkedVexations, setBookmarkedVexations] = useState<Vexation[]>([])
+  const [completedSolutions, setCompletedSolutions] = useState<(Solution & { vexation?: Vexation | null  })[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'Claimed' | 'Bookmarked' | 'Completed'>('Claimed')
   const [searchQuery, setSearchQuery] = useState('')
@@ -26,20 +27,29 @@ function ClaimedVexationsPage() {
   const tabs = [
     { id: 'Claimed', label: 'Claimed', count: claimedVexations.length, icon: <Zap size={14} /> },
     { id: 'Bookmarked', label: 'Bookmarked', count: bookmarkedVexations.length, icon: <Bookmark size={14} /> },
-    { id: 'Completed', label: 'Completed', count: 142, icon: <CheckCircle2 size={14} /> },
+    { id: 'Completed', label: 'Completed', count: completedSolutions.length, icon: <CheckCircle2 size={14} /> },
   ]
 
   useEffect(() => {
     async function loadClaimed() {
       if (!user) return
       try {
-        const [claimed, bookmarked] = await Promise.all([
+        const [claimed, bookmarked, approved] = await Promise.all([
           getClaimedVexations(user.uid),
-          getSavedVexations(user.uid)
+          getSavedVexations(user.uid),
+          getApprovedSolutionsBySolver(user.uid)
         ])
 
         setClaimedVexations(claimed)
         setBookmarkedVexations(bookmarked)
+
+        const withVexations = await Promise.all(
+          approved.map(async (sol) => {
+            const vexation = await getVexationById(sol.vexationId)
+            return { ...sol, vexation }
+          })
+        )
+        setCompletedSolutions(withVexations)
       } catch (err) {
         console.error('Failed to load active workspace data: ', err)
       } finally {
@@ -191,33 +201,77 @@ function ClaimedVexationsPage() {
               Find Problems
             </Link>
           </div>
-        ) : (
-          <div className="border border-white/5 bg-[#151320] rounded-xl p-12 text-center text-slate-500 font-medium">
-            [ Placeholder for {activeTab} Tab — Connect Data Later! ]
-          </div>
-        )}
+        ) : activeTab === 'Completed' && completedSolutions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {completedSolutions
+              .filter((sol) => {
+                if (!searchQuery) return true
+                const q = searchQuery.toLowerCase()
+                return (
+                  sol.title.toLowerCase().includes(q) ||
+                  sol.description.toLowerCase().includes(q) ||
+                  (sol.vexation?.title.toLowerCase().includes(q) ?? false)
+                )
+              })
+              .map((sol) => (
+                <Link
+                  key={sol.id}
+                  to="/solution/$id"
+                  params={{ id: sol.id }}
+                  className="block"
+                >
+                  <div className="bg-[#1A1825] border border-emerald-500/10 hover:border-emerald-500/30 transition-colors rounded-xl p-6 flex flex-col group h-full">
+                    <div className="flex items-center justify-between mb-4 mt-1">
+                      <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest text-emerald-400">
+                        <CheckCircle2 size={12} />
+                        APPROVED
+                      </div>
+                      <span className="text-[11px] font-medium text-slate-500">
+                        {sol.approvedAt?.toDate?.().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) ?? ''}
+                      </span>
+                    </div>
 
-        {/* Bottom Streak Box */}
-        <div className="mt-8 bg-[#151320] border border-white/5 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-[#553CFF]/10 rounded-2xl flex items-center justify-center border border-[#553CFF]/20 shadow-[inset_0_0_15px_rgba(85,60,255,0.1)]">
-              <Trophy className="text-[#553CFF]" size={26} />
-            </div>
-            <div>
-              <h4 className="text-white text-[17px] font-bold mb-1">Claimed streak: 5 days</h4>
-              <p className="text-sm text-slate-400 font-medium">Solve 2 more today to reach your goal.</p>
-            </div>
-          </div>
-          
-          {/* Avatar stack mock */}
-          <div className="flex -space-x-3 sm:flex">
-             <div className="w-9 h-9 rounded-full bg-slate-800 border-2 border-[#151320] flex items-center justify-center text-[10px] font-bold text-slate-400 z-30">KD</div>
-             <div className="w-9 h-9 rounded-full bg-indigo-800 border-2 border-[#151320] flex items-center justify-center text-[10px] font-bold text-indigo-300 z-20">AL</div>
-             <div className="w-9 h-9 rounded-full bg-emerald-800 border-2 border-[#151320] flex items-center justify-center text-[10px] font-bold text-emerald-300 z-10">JS</div>
-             <div className="w-9 h-9 rounded-full bg-[#2A263D] border-2 border-[#151320] flex items-center justify-center text-[10px] font-bold text-white z-0">+12</div>
-          </div>
-        </div>
+                    <h3 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-emerald-300 transition-colors line-clamp-2">
+                      {sol.title}
+                    </h3>
+                    <p className="text-[13px] text-slate-400 mb-4 flex-1 line-clamp-2 leading-relaxed">
+                      {sol.description}
+                    </p>
 
+                    {sol.vexation && (
+                      <p className="text-[11px] text-slate-500 mb-5">
+                        Solved <span className="text-slate-300 font-medium">{sol.vexation.title}</span>
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {sol.techStack?.slice(0, 3).map((tech) => (
+                          <span key={tech} className="border border-white/10 px-2.5 py-1 rounded text-[9px] font-bold text-slate-400 tracking-widest uppercase">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg text-[12px] font-bold">
+                        View
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        ) : activeTab === 'Completed' ? (
+          <div className="border border-white/5 bg-[#151320] rounded-2xl p-16 text-center flex flex-col items-center">
+            <CheckCircle2 size={48} className="text-slate-700 mb-4" />
+            <h3 className="text-xl font-bold text-white mb-2">No completed solutions yet</h3>
+            <p className="text-slate-400 max-w-sm mb-8 text-sm leading-relaxed">
+              Solutions you submit that get approved by the poster will appear here.
+            </p>
+            <Link to="/browse" className="bg-[#553CFF] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#4A34DF] transition-colors">
+              Find Problems
+            </Link>
+          </div>
+        ) : null}
       </div>
     </div>
   )

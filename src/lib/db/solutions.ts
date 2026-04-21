@@ -78,6 +78,24 @@ export async function getSolutionsBySolver(solverId: string): Promise<Solution[]
   }
 }
 
+// Get approved solutions by Solver / GET
+export async function getApprovedSolutionsBySolver(solverId: string): Promise<Solution[]> {
+  try {
+    const q = query(
+      solutionsRef,
+      where('solverId', '==', solverId),
+      where('status', '==', 'approved'),
+      orderBy('approvedAt', 'desc')
+    )
+
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Solution)
+  } catch (error: any) {
+    console.error('Error fetching approved solutions: ', error)
+    return []
+  }
+}
+
 // Fetch all solutions for a specific Vexation ID
 export async function getSolutionsForVexation(vexationId: string): Promise<Solution[]> {
   try {
