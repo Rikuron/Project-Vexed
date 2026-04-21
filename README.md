@@ -1,193 +1,223 @@
-Welcome to your new TanStack Start app! 
+<div align="center">
 
-# Getting Started
+# Vexed
 
-To run this application:
+**Turn your daily frustrations into someone's next mission.**
+
+A collaborative problem-solving platform where real-world frustrations meet developer talent. Posters submit challenges. Solvers build solutions. Everyone wins.
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![TanStack](https://img.shields.io/badge/TanStack_Router-1.x-FF4154?logo=reactrouter&logoColor=white)](https://tanstack.com/router)
+[![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+</div>
+
+---
+
+## 📸 Screenshots
+
+| Sign In | Poster Dashboard | Problem Discovery | Solver Analytics |
+| :---: | :---: | :---: | :---: |
+| ![Sign In](/public/screenshots/sign_in_page.png) | ![Poster Landing](/public/screenshots/poster_landing_page.png) | ![Browse](/public/screenshots/browse_page.png) | ![Solver Dashboard](/public/screenshots/solver_dashboard.png) |
+
+---
+
+## 🧩 The Core Loop
+
+### For Posters — *The Problem Owners*
+
+Posters submit real-world frustrations ("Vexations") through a guided form. Every submission is automatically processed by an **AI moderation & categorization pipeline** that:
+
+- Screens for policy violations, explicit content, and low-substance input
+- Classifies the problem into a **Sector** (e.g., Health, Finance, Environment, AI/ML)
+- Generates tags, severity ratings, technical complexity, and a developer-focused summary
+- Suggests a relevant tech stack and key challenges
+
+### For Solvers — *The Developers*
+
+Developers browse a dynamic discovery feed of categorized problems. They can:
+
+- **Claim** vexations to work on
+- **Submit solutions** with image uploads and detailed write-ups
+- **Track streaks** and activity analytics on a personalized dashboard
+- Build a **public portfolio** showcasing completed solutions
+
+---
+
+## 🏗️ Technical Architecture
+
+### Stack
+
+| Layer | Technology |
+| --- | --- |
+| **UI Framework** | React 19 |
+| **Build Tool** | Vite 7 |
+| **Routing & SSR** | TanStack Router + TanStack Start (Nitro) |
+| **Backend / DB** | Firebase (Firestore, Auth, Storage) |
+| **Server Functions** | Nitro-based server functions via `createServerFn` |
+| **AI Integration** | OpenRouter API (MiniMax M2.5) — categorization & moderation |
+| **Styling** | Tailwind CSS 4 + Custom Aurora Design System |
+| **Icons** | Lucide React |
+| **Testing** | Vitest + Testing Library |
+
+### Design System — *Aurora*
+
+The UI is built on a custom dark-mode-first design system defined in `src/styles.css`, featuring:
+
+- A deep indigo/purple palette (`vexed-primary`, `vexed-highlight1–3`, `vexed-accent1–4`)
+- Dark backgrounds (`vexed-bg1–4`) designed for extended screen time
+- Inter font family with system fallbacks
+- Orbital loading animations and hidden-scrollbar utilities
+
+### Project Structure
+
+```
+src/
+├── components/           # Modular, reusable UI components
+│   ├── cards/            #   — Card-based display components (11 cards)
+│   ├── forms/            #   — Submit, edit, and verification modals (6 forms)
+│   ├── auth/             #   — Auth context & service
+│   ├── Sidebar.tsx       #   — Main navigation sidebar
+│   ├── MobileHeader.tsx  #   — Responsive mobile header
+│   ├── MobileBottomNav.tsx
+│   ├── PosterLandingPage.tsx
+│   ├── SolverDashboard.tsx
+│   └── LoadingScreen.tsx
+├── routes/               # File-based routing (TanStack Router)
+│   ├── index.tsx          #   — Role-based home (Poster vs. Solver)
+│   ├── browse.tsx         #   — Problem discovery feed
+│   ├── submit.tsx         #   — Vexation submission flow
+│   ├── portfolio.tsx      #   — Public solver portfolio
+│   ├── signIn.tsx         #   — Authentication page
+│   ├── complete-profile.tsx
+│   ├── my/               #   — User-specific pages
+│   │   ├── vexations.tsx  #     — My submitted vexations
+│   │   ├── claimed.tsx    #     — My claimed problems
+│   │   └── saved.tsx      #     — Bookmarked vexations
+│   ├── vexation/$id.tsx   #   — Vexation detail page
+│   └── solution/$id.tsx   #   — Solution detail page
+├── lib/                  # Core business logic
+│   ├── ai.server.ts       #   — Server-only AI functions (API key never leaks)
+│   ├── firebase.ts        #   — Firebase app initialization
+│   ├── auth/              #   — AuthContext + authService
+│   ├── db/                #   — Firestore CRUD abstractions
+│   │   ├── vexations.ts
+│   │   ├── solutions.ts
+│   │   ├── activities.ts
+│   │   ├── users.ts
+│   │   └── storage.ts
+│   ├── constants/         #   — App-wide constants
+│   └── utils/             #   — Shared utilities
+├── types/                # TypeScript type definitions
+│   ├── vexation.ts
+│   ├── solution.ts
+│   ├── user.ts
+│   └── activity.ts
+└── styles.css            # Aurora design system tokens
+```
+
+### Key Design Decisions
+
+- **Role-based routing** — The home page (`/`) dynamically renders `SolverDashboard` or `PosterLandingPage` based on the user's role.
+- **Server function isolation** — AI calls run exclusively on the server via `createServerFn`. The `OPENROUTER_API_KEY` is accessed through `process.env` and never bundled into the client.
+- **Clean data layer** — All Firestore operations are abstracted in `src/lib/db/`, keeping components free of database logic.
+- **AI-powered moderation** — Both new submissions and edits pass through policy validation before persisting.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** ≥ 20
+- **npm** (included with Node)
+- A **Firebase** project with Firestore, Authentication, and Storage enabled
+- An **OpenRouter** API key
+
+### 1. Clone & Install
 
 ```bash
+git clone <repo-url>
+cd vexed
 npm install
+```
+
+### 2. Configure Environment
+
+Create a `.env` file at the project root:
+
+```env
+# Firebase (client-side — VITE_ prefix required)
+VITE_FIREBASE_API_KEY=your_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# OpenRouter (server-side — NO VITE_ prefix)
+OPENROUTER_API_KEY=your_openrouter_key
+```
+
+> ⚠️ **Important:** Never prefix server-side secrets with `VITE_`. Doing so exposes them in the client bundle.
+
+### 3. Start Development Server
+
+```bash
 npm run dev
 ```
 
-# Building For Production
+The app will be available at `http://localhost:3000`.
 
-To build this application for production:
+### 4. Run Tests
+
+```bash
+npm test
+```
+
+---
+
+## 🏭 Production & Deployment
+
+Vexed targets **Firebase Hosting** with Cloud Functions, compiled via the Nitro preset.
+
+### Build
 
 ```bash
 npm run build
 ```
 
-## Testing
+This outputs optimized server functions and static assets to `.output/`.
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+### Set Secrets
 
 ```bash
-npm run test
+firebase functions:secrets:set OPENROUTER_API_KEY
 ```
 
-## Styling
+### Deploy
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
+```bash
+firebase deploy
 ```
 
-Then anywhere in your JSX you can use it like so:
+---
 
-```tsx
-<Link to="/about">About</Link>
-```
+## 🤝 Contributing
 
-This will create a link that will navigate to the `/about` route.
+1. **Styling** — Always defer to `src/styles.css` as the source of truth for all branding tokens and Aurora design system utilities.
+2. **Type safety** — No unused variables. Strict TypeScript throughout.
+3. **Component architecture** — Keep components modular. DB logic stays in `src/lib/db/`, AI logic stays in `src/lib/ai.server.ts`.
+4. See `.agent/PROJECT_GUIDELINES.md` for the full coding policy.
 
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
+---
 
-### Using A Layout
+<div align="center">
 
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
+**Vexed** · Built with 🔥 by passionate developers
 
-Here is an example layout that includes a header:
+*Turn your daily frustrations into someone's next mission.*
 
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+</div>

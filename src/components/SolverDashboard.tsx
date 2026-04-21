@@ -12,7 +12,7 @@ import { getUserActivities } from '../lib/db/activities'
 import { getStreakFromData } from '../lib/utils/streak'
 import type { Vexation, Solution, Activity } from '../types'
 
-export default function DeveloperDashboard() {
+export default function SovlerDashboard() {
   const { user } = useAuth()
   const [claimedVexations, setClaimedVexations] = useState<Vexation[]>([])
   const [completedSolutions, setCompletedSolutions] = useState<Solution[]>([])
@@ -53,7 +53,7 @@ export default function DeveloperDashboard() {
 
       <div className="max-w-[1400px] mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">Developer Dashboard</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">Solver Dashboard</h1>
           <div className="flex items-center gap-3 sm:gap-4">
             <button className="relative p-2 text-slate-400 hover:text-white transition-colors" aria-label="Notifications">
               <Bell size={20} />

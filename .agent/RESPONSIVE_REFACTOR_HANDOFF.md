@@ -61,7 +61,7 @@ This document captures the current state of the responsive UI refactoring for th
 |---|---|---|
 | **Root Layout** | `src/routes/__root.tsx` | Added `overflow-x-hidden` to flex container. Removed `pt-14 lg:pt-0` from `<main>`. |
 | **PosterLandingPage** | `src/components/PosterLandingPage.tsx` | Complete redesign: removed top bar & suggestion chips, centered hero vertically, cards in horizontal scroll on mobile with fade edges, 3-col grid on `md`+. Added `relative` for glow containment. |
-| **DeveloperDashboard** | `src/components/DeveloperDashboard.tsx` | Constrained glow blobs (`w-[300px] sm:w-[500px]`), header wraps on mobile (`flex-col sm:flex-row`), CTA button text scales down. |
+| **SolverDashboard** | `src/components/SolverDashboard.tsx` | Constrained glow blobs (`w-[300px] sm:w-[500px]`), header wraps on mobile (`flex-col sm:flex-row`), CTA button text scales down. |
 | **Browse** | `src/routes/browse.tsx` | Filter/sort tabs wrap (`flex-wrap`), padding reduced on mobile (`px-4 sm:px-6`), `flex-1` spacer hidden on mobile. |
 | **My Vexations** | `src/routes/my-vexations.tsx` | Table converts to stacked cards on mobile (`hidden sm:grid` for header, card layout for rows). Title scales (`text-2xl sm:text-3xl`). Stats row wraps. |
 | **Claimed** | `src/routes/my/claimed.tsx` | Search/sort stacked vertically on mobile. Tab gaps reduced (`gap-4 sm:gap-8`). Title scales. |

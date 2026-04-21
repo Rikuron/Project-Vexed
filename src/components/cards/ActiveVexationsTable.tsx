@@ -45,11 +45,11 @@ export default function ActiveVexationsTable({ projects, loading }: ActiveVexati
               className="flex flex-col gap-2 px-6 py-4 border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] sm:gap-4 sm:items-center"
             >
               <div>
-                <p className="text-sm font-semibold text-white truncate pr-2">{project.title}</p>
+                <p className="text-sm font-semibold text-white wrap-break-word pr-2">{project.title}</p>
                 <p className="text-[11px] text-slate-500 font-medium">ID: #{project.id.slice(0, 6)}</p>
               </div>
               <div className="flex items-center gap-3 sm:contents">
-                <span className={`inline-flex px-2.5 py-1 rounded text-[10px] font-bold border ${statusStyles[project.status || 'Claimed'] || statusStyles['Claimed']}`}>
+                <span className={`justify-self-start inline-flex px-2.5 py-1 rounded text-[10px] font-bold border ${statusStyles[project.status || 'Claimed'] || statusStyles['Claimed']}`}>
                   {(project.status || 'IN PROGRESS').toUpperCase()}
                 </span>
                 <span className="text-sm text-slate-300">{project.technicalComplexity || 'N/A'}</span>
