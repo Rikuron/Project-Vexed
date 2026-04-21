@@ -29,7 +29,7 @@ The project follows a modular, feature-focused directory structure within `src/`
   - `ai.server.ts`: TanStack Start server functions for secure server-side logic (e.g., calling OpenRouter AI for categorization and moderation).
   - `auth/`: Authentication contexts and hooks.
 - `src/types/`: TypeScript definitions (e.g., User profiles, Vexation schemas, Activity models).
-- `src/styles.css`: The central stylesheet containing all necessary styling rules, custom CSS variables, and core branding tokens ("Aurora" styling).
+- `src/styles.css`: The central stylesheet containing all necessary styling rules, custom CSS variables, and core branding tokens ("Vexed" styling).
 
 *Note: Whenever creating a new feature, place new reusable UI parts in `components/`, core logic or DB queries in `lib/`, and define matching types in `types/`.*
 

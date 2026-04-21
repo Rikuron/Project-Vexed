@@ -1,6 +1,6 @@
 <div align="center">
 
-# Vexed
+# ![Vexed logo](/public/wordmark.png)
 
 **Turn your daily frustrations into someone's next mission.**
 
