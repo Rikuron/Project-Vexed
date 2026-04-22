@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Loader2 } from 'lucide-react'
 import type { Vexation, Sector, Severity, Complexity } from '../../types'
-import { validateProblemEdit } from '../../lib/ai.server'
+import { validateProblemEdit } from '../../lib/ai/ai.server.cockpit'
 
 interface EditVexationModalProps {
   isOpen: boolean
