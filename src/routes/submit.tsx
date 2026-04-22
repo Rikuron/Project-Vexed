@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { analyzeProblem } from '../lib/ai.server'
+import { analyzeProblem } from '../lib/ai/ai.server.cockpit'
 import { createVexation } from '../lib/db'
 import { useAuth } from '../lib/auth/AuthContext'
 import type { AIAnalysis } from '../types'

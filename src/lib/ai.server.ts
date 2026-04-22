@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 import type { AIAnalysis } from "../types"
-
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+import { getCurrentKey, incrementRequest, forceRotateOnRateLimit } from './keyManager.server'
 
 /**
  * Server function that sends a problem title + description to OpenRouter
@@ -11,17 +10,19 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 export const analyzeProblem = createServerFn({ method: 'POST' })
   .inputValidator((data: { title: string; description: string; }) => data)
   .handler(async ({ data }): Promise<AIAnalysis> => {
-    if (!OPENROUTER_API_KEY) throw new Error('OPENROUTER_API_KEY is not configured on the server.')
+    const activeKey = getCurrentKey()
+    if (!activeKey) throw new Error('No LLM API keys configured.')
 
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const response = await fetch('https://api.ollama.com/v1/chat/', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Authoriztion': `Bearer ${activeKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'minimax/minimax-m2.5',
+          model: 'minimax-m2.7',
+          stream: false,
           max_tokens: 1024,
           messages: [
             {
@@ -53,15 +54,22 @@ Only respond with valid JSON. No markdown, no explanation, just the JSON object.
         })
       })
 
+      if (response.status === 429) {
+        forceRotateOnRateLimit()
+        throw new Error('Rate limit hit - key rotated. Please retry.')
+      }
+
       if (!response.ok) {
         const errorBody = await response.text()
-        throw new Error(`OpenRouter API returned ${response.status}: ${errorBody}`)
+        throw new Error(`Ollama API returned ${response.status}: ${errorBody}`)
       }
+
+      incrementRequest()
 
       const result = await response.json()
       const content = result.choices?.[0]?.message?.content
 
-      if (!content) throw new Error('OpenRouter returned an empty response.')
+      if (!content) throw new Error('Ollama returned an empty response.')
 
       const parsed: AIAnalysis = JSON.parse(content)
 
@@ -81,17 +89,19 @@ Only respond with valid JSON. No markdown, no explanation, just the JSON object.
 export const validateProblemEdit = createServerFn({ method: 'POST' })
   .inputValidator((data: { title: string; description: string; }) => data)
   .handler(async ({ data }): Promise<{ isViolatingPolicies: boolean; violationReason: string | null }> => {
-    if (!OPENROUTER_API_KEY) throw new Error('OPENROUTER_API_KEY is not configured on the server.')
+    const activeKey = getCurrentKey()
+    if (!activeKey) throw new Error('No LLM API keys configured.')
 
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const response = await fetch('https://api.ollama.com/v1/chat/', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Authorization': `Bearer ${activeKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'minimax/minimax-m2.5',
+          model: 'minimax-m2.7',
+          stream: false,
           max_tokens: 1024,
           messages: [
             { 
@@ -115,15 +125,22 @@ Only respond with a JSON object containing these exact fields:
         })
       })
 
+      if (response.status === 429) {
+        forceRotateOnRateLimit()
+        throw new Error('Rate limit hit - key rotated. Please retry.')
+      }
+
       if (!response.ok) {
         const errorBody = await response.text()
-        throw new Error(`OpenRouter API returned ${response.status}: ${errorBody}`)
+        throw new Error(`Ollama API returned ${response.status}: ${errorBody}`)
       }
+
+      incrementRequest()
 
       const result = await response.json()
       const content = result.choices?.[0]?.message?.content
 
-      if (!content) throw new Error('OpenRouter returned an empty response.')
+      if (!content) throw new Error('Ollama returned an empty response.')
 
       return JSON.parse(content)
     } catch (error) {
