@@ -1,17 +1,24 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '../lib/auth/AuthContext'
-import SolverDashboard from '../components/SolverDashboard'
-import PosterLandingPage from '../components/PosterLandingPage'
+import { useEffect } from 'react'
+import DedicatedLandingPage from '../components/landing/DedicatedLandingPage'
 import LoadingScreen from '../components/LoadingScreen'
 
 export const Route = createFileRoute('/')({ component: IndexPage })
 
 function IndexPage() {
   const { userProfile, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!authLoading && userProfile) {
+      navigate({ to: '/app' })
+    }
+  }, [userProfile, authLoading, navigate])
 
   if (authLoading) return <LoadingScreen />
 
-  if (userProfile?.role === 'Solver') return <SolverDashboard />
+  if (userProfile) return null
 
-  return <PosterLandingPage />
+  return <DedicatedLandingPage />
 }

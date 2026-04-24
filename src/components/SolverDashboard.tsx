@@ -12,7 +12,7 @@ import { getUserActivities } from '../lib/db/activities'
 import { getStreakFromData } from '../lib/utils/streak'
 import type { Vexation, Solution, Activity } from '../types'
 
-export default function SovlerDashboard() {
+export default function SolverDashboard() {
   const { user } = useAuth()
   const [claimedVexations, setClaimedVexations] = useState<Vexation[]>([])
   const [completedSolutions, setCompletedSolutions] = useState<Solution[]>([])

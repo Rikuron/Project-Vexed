@@ -54,11 +54,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const { loading } = useAuth()
 
   const routerState = useRouterState()
-  const isSignInPage = routerState.location.pathname === '/signIn'
+  const isLandingOrSignIn = routerState.location.pathname === '/' || routerState.location.pathname === '/signIn'
 
   if (loading) return <LoadingScreen />
 
-  if (isSignInPage) return (
+  if (isLandingOrSignIn) return (
     <div className="min-h-screen">
       <main>
         {children}

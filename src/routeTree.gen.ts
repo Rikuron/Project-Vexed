@@ -14,6 +14,7 @@ import { Route as SignInRouteImport } from './routes/signIn'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VexationIdRouteImport } from './routes/vexation/$id'
 import { Route as SolutionIdRouteImport } from './routes/solution/$id'
@@ -44,6 +45,11 @@ const CompleteProfileRoute = CompleteProfileRouteImport.update({
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -79,6 +85,7 @@ const MyClaimedRoute = MyClaimedRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/portfolio': typeof PortfolioRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/portfolio': typeof PortfolioRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRoute
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/portfolio': typeof PortfolioRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app'
     | '/browse'
     | '/complete-profile'
     | '/portfolio'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/app'
     | '/browse'
     | '/complete-profile'
     | '/portfolio'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/app'
     | '/browse'
     | '/complete-profile'
     | '/portfolio'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRoute
   BrowseRoute: typeof BrowseRoute
   CompleteProfileRoute: typeof CompleteProfileRoute
   PortfolioRoute: typeof PortfolioRoute
@@ -210,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRoute,
   BrowseRoute: BrowseRoute,
   CompleteProfileRoute: CompleteProfileRoute,
   PortfolioRoute: PortfolioRoute,
