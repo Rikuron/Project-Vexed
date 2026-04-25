@@ -71,3 +71,15 @@ We will introduce a `VideoDemoSection.tsx` component below the Value Proposition
 - **Layout:** Should the videos be placed side-by-side, or should we use an interactive "Tab" component (e.g., clicking "Poster" or "Solver" swaps the video and description)?
 - **Recording Mechanism:** Do you want to record these flows yourself, or would you like me to use my **Browser Subagent** to navigate your local dev server and automatically generate high-quality `.webp` video recordings of these processes?
 - **Styling:** Should the videos sit inside stylized browser/device frames (like a mock MacBook or iPhone window), or just be floating elements with soft drop-shadows?
+
+### Landing Page Finalization Elements
+
+To complete the funnel and make the page production-ready, we will add three critical components to the Dedicated Landing Page layout:
+
+1. **`LandingHeader.tsx`**: A sticky, glassmorphism top navigation bar containing the Vexed logo on the left and the "Launch App" / "Sign In" CTA buttons on the right. This ensures users can take action from anywhere on the page without scrolling back to the Hero.
+2. **`LandingCTA.tsx`**: A bold final Call-to-Action section placed at the bottom of the page (after Value Propositions). It will feature a final pitch (e.g., "Ready to turn frustrations into missions?") and a prominent "Get Started" button.
+3. **`LandingFooter.tsx`**: A minimal, trustworthy footer containing standard links (Privacy Policy, Terms of Service, GitHub repository, social links) and copyright information.
+
+#### Open Questions for Finalization:
+- **Navigation Links:** Do we want any anchor links in the Header to scroll to specific sections (e.g., "How it Works", "For Posters", "For Solvers"), or just keep it minimal with the Logo and Auth buttons?
+- **Footer Content:** Are there any specific links you want in the footer right now, or should I just generate standard placeholders that you can update later?
