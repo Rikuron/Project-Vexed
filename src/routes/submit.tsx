@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { analyzeProblem } from '../lib/ai/ai.server.cockpit'
 import { createVexation } from '../lib/db'
 import { useAuth } from '../lib/auth/AuthContext'
@@ -20,7 +20,8 @@ type SubmitState = 'idle' | 'analyzing' | 'verifying' | 'saving' | 'success' | '
 
 function SubmitPage() {
   const { prefill } = Route.useSearch()
-  const { user } = useAuth()
+  const { user, userProfile } = useAuth()
+  const navigate = useNavigate()
 
   const [title, setTitle] = useState(prefill)
   const [description, setDescription] = useState('')
@@ -30,6 +31,12 @@ function SubmitPage() {
   const [createdId, setCreatedId] = useState('')
 
   const canSubmit = title.trim().length >= 5 && description.trim().length >= 20
+
+  useEffect(() => {
+    if (userProfile?.role === 'Solver') {
+      navigate({ to: '/app', replace: true })
+    }
+  }, [userProfile?.role, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

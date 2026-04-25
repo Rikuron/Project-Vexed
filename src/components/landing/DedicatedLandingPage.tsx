@@ -1,5 +1,6 @@
 import HeroSection from './HeroSection'
 import ValueProposition from './ValueProposition'
+import VideoDemoSection from './VideoDemoSection'
 
 export default function DedicatedLandingPage() {
   return (
@@ -16,6 +17,7 @@ export default function DedicatedLandingPage() {
 
       <div className="relative z-10 w-full">
         <HeroSection />
+        <VideoDemoSection />
         <ValueProposition />
       </div>
     </div>

@@ -14,11 +14,6 @@ As requested, we will prepare this on a separate git branch.
 > **Code Delivery via Snippets**  
 > As per `snippet-mode.md`, I will NOT modify your code directly. Instead, once this plan is approved, I will provide you with the markdown code snippets indicating exactly what to add, modify, or delete, and I'll wait for you to apply them.
 
-## Open Questions
-
-- **App Route Path**: Since the landing page will take over the root `/` route, we need to move the main application entry point. I propose moving it to `/app`. Does this work for you?
-- **Landing Page Visibility**: Should logged-in users who navigate to `/` see the landing page, or should they be automatically redirected to `/app`? 
-
 ## Proposed Changes
 
 ### Route Restructuring
@@ -55,3 +50,24 @@ As requested, we will prepare this on a separate git branch.
 2. Verify the layout appears without the app sidebar and navigation.
 3. Click the CTA to ensure it routes correctly to `/app`.
 4. Verify `/app` loads the correct interface (Poster or Solver) based on authentication state.
+
+### Video Demonstration Section
+
+We will introduce a `VideoDemoSection.tsx` component below the Value Proposition. This section will visually guide users through the platform's core workflows to eliminate any confusion before they even sign up.
+
+#### Processes to Record:
+
+1. **The Poster Experience: Venting Constructively**
+   - **Starting Point:** The main `/browse` dashboard.
+   - **Action:** Clicking "Submit", filling out the Vexation form (Title, Description, Tags), and publishing it.
+   - **Goal:** Show how quick, clean, and frictionless it is to get a frustration off their chest and onto the open board.
+
+2. **The Solver Experience: Delivering a Solution**
+   - **Starting Point:** Browsing active, high-vote vexations.
+   - **Action:** Clicking into a specific vexation, hitting "Submit Solution", and providing a link (e.g., a GitHub repo or deployed app).
+   - **Goal:** Demonstrate the direct pipeline from finding validated demand to submitting a real-world solution.
+
+#### Open Questions for Video Section:
+- **Layout:** Should the videos be placed side-by-side, or should we use an interactive "Tab" component (e.g., clicking "Poster" or "Solver" swaps the video and description)?
+- **Recording Mechanism:** Do you want to record these flows yourself, or would you like me to use my **Browser Subagent** to navigate your local dev server and automatically generate high-quality `.webp` video recordings of these processes?
+- **Styling:** Should the videos sit inside stylized browser/device frames (like a mock MacBook or iPhone window), or just be floating elements with soft drop-shadows?
