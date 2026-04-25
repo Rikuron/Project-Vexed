@@ -1,13 +1,13 @@
 import HeroSection from './HeroSection'
 import ValueProposition from './ValueProposition'
 import VideoDemoSection from './VideoDemoSection'
-import LandingHeader from './LandingHeader' // Add this import
+import LandingHeader from './LandingHeader'
+import LandingCTA from './LandingCTA' // Add this import
 
 export default function DedicatedLandingPage() {
   return (
     <div className="min-h-screen bg-vexed-bg2 text-white flex flex-col items-center relative overflow-hidden">
       
-      {/* Insert the Header Here */}
       <LandingHeader />
 
       {/* Dynamic Animated Background Grid */}
@@ -20,10 +20,11 @@ export default function DedicatedLandingPage() {
       <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-vexed-highlight2/10 blur-[150px] rounded-full pointer-events-none"></div>
       <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-vexed-primary/10 blur-[150px] rounded-full pointer-events-none"></div>
 
-      <div className="relative z-10 w-full pt-16"> {/* Optional: Added pt-16 to ensure hero text isn't covered by header on small screens */}
+      <div className="relative z-10 w-full pt-16">
         <HeroSection />
         <VideoDemoSection />
         <ValueProposition />
+        <LandingCTA /> {/* Inserted here at the bottom */}
       </div>
     </div>
   )
