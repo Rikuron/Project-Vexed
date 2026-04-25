@@ -69,7 +69,7 @@ We will introduce a `VideoDemoSection.tsx` component below the Value Proposition
 
 #### Open Questions for Video Section:
 - **Layout:** Should the videos be placed side-by-side, or should we use an interactive "Tab" component (e.g., clicking "Poster" or "Solver" swaps the video and description)?
-- **Recording Mechanism:** Do you want to record these flows yourself, or would you like me to use my **Browser Subagent** to navigate your local dev server and automatically generate high-quality `.webp` video recordings of these processes?
+- **Recording Mechanism:** Do you want to record these flows yourself, or would you like me to use my **Browser Subagent** to navigate your local dev server and automatically generate high-quality `.webm` video recordings of these processes?
 - **Styling:** Should the videos sit inside stylized browser/device frames (like a mock MacBook or iPhone window), or just be floating elements with soft drop-shadows?
 
 ### Landing Page Finalization Elements
