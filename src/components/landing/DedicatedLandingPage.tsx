@@ -2,7 +2,8 @@ import HeroSection from './HeroSection'
 import ValueProposition from './ValueProposition'
 import VideoDemoSection from './VideoDemoSection'
 import LandingHeader from './LandingHeader'
-import LandingCTA from './LandingCTA' // Add this import
+import LandingCTA from './LandingCTA'
+import LandingFooter from './LandingFooter' // Add this import
 
 export default function DedicatedLandingPage() {
   return (
@@ -20,11 +21,12 @@ export default function DedicatedLandingPage() {
       <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-vexed-highlight2/10 blur-[150px] rounded-full pointer-events-none"></div>
       <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-vexed-primary/10 blur-[150px] rounded-full pointer-events-none"></div>
 
-      <div className="relative z-10 w-full pt-16">
+      <div className="relative z-10 w-full pt-16 md:pt-0">
         <HeroSection />
         <VideoDemoSection />
         <ValueProposition />
-        <LandingCTA /> {/* Inserted here at the bottom */}
+        <LandingCTA />
+        <LandingFooter /> 
       </div>
     </div>
   )

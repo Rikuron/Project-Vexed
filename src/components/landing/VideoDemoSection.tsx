@@ -26,7 +26,7 @@ export default function VideoDemoSection() {
   }, [activeTab])
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-24 flex flex-col items-center relative z-10">
+    <section id="demo" className="w-full max-w-6xl mx-auto px-6 py-24 flex flex-col items-center relative z-10">
       <h2 className="text-4xl md:text-5xl font-black text-center mb-6 text-white">
         See how <span className="text-vexed-primary">Vexed</span> works
       </h2>

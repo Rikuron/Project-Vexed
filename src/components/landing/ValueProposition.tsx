@@ -1,6 +1,6 @@
 export default function ValueProposition() {
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 relative z-10">
+    <section id="features" className="w-full max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 relative z-10">
       {/* Poster Side */}
       <div className="relative p-10 rounded-4xl bg-vexed-bg1/80 backdrop-blur-md border border-vexed-accent2 overflow-hidden group hover:border-vexed-highlight2 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(129,140,248,0.3)]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-vexed-highlight2/20 rounded-full blur-[80px] -mr-20 -mt-20 transition-opacity duration-700 group-hover:opacity-100 opacity-30 pointer-events-none"></div>
