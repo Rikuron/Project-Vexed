@@ -19,7 +19,7 @@ import { cockpitFetch, getPoolSnapshot, hasCockpitPool } from "./cockpit"
 
 const PROVIDER_ID = 'ollama-cloud'
 const API_ENDPOINT = 'https://ollama.com/v1/chat/completions'
-const DEFAULT_MODEL = 'minimax-m2.7:cloud'
+const DEFAULT_MODEL = 'minimax-m2.5:cloud'
 
 function buildFetch(): typeof fetch {
   if (hasCockpitPool(PROVIDER_ID)) return cockpitFetch(PROVIDER_ID)
