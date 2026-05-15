@@ -257,3 +257,16 @@ export async function approveSolution(
     targetTitle: solData.title || 'Unknown Solution'
   })
 }
+
+// Mark all Solver's solutions on account deletion / PUT
+export async function cascadeDeleteSolver(uid: string): Promise<void> {
+  const q = query(solutionsRef, where('solverId', '==', uid))
+  const snapshot = await getDocs(q)
+
+  const updates = snapshot.docs.map((docSnap) => updateDoc(doc(db, 'solutions', docSnap.id), {
+    solverDisplayName: '[Deleted Solver]',
+    updatedAt: serverTimestamp()
+  }))
+
+  await Promise.all(updates)
+}

@@ -13,6 +13,7 @@ interface AuthContextType {
   signUpWithEmail: (email: string, password: string, displayName: string, role: UserRole) => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -59,6 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserProfile(null)
   }
 
+  const refreshProfile = async () => {
+    if (user) {
+      const profile = await getUserProfile(user.uid)
+      setUserProfile(profile)
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -67,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithProvider,
       signUpWithEmail,
       signInWithEmail,
-      signOut
+      signOut,
+      refreshProfile
     }}>
       {children}
     </AuthContext.Provider>

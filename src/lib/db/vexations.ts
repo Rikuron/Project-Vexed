@@ -244,6 +244,56 @@ export async function updateVexation(
   })
 }
 
+// Close a vexation / PUT
+export async function closeVexation(
+  vexationId: string,
+  posterId: string,
+  posterName: string
+): Promise<void> {
+  const vexRef = doc(db, 'vexations', vexationId)
+  const vexSnap = await getDoc(vexRef)
+
+  if (!vexSnap.exists()) throw new Error('Vexation not found')
+  if (vexSnap.data()?.authorId !== posterId) throw new Error('Only the Poster can close this Vexation')
+
+  await updateDoc(vexRef, {
+    status: 'Closed',
+    closedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  })
+
+  const vexData = vexSnap.data()
+  const claimedSolvers: string[] = vexData?.claimedByID ?? []
+
+  await Promise.all(
+    claimedSolvers.map((solverId) => 
+      logActivity({
+        ownerId: solverId,
+        actorId: posterId,
+        actorName: posterName,
+        type: 'CLOSE_VEXATION',
+        targetId: vexationId,
+        targetTitle: vexData?.title ?? 'Unknown Vexation'
+      })
+    )
+  )
+}
+
+// Mark all Poster's vexations on account deletion / PUT
+export async function cascadeDeletePoster(uid: string): Promise<void> {
+  const q = query(vexationsRef, where('authorId', '==', uid))
+  const snapshot = await getDocs(q)
+
+  const updates = snapshot.docs.map((docSnap) => updateDoc(doc(db, 'vexations', docSnap.id), {
+    authorDisplayName: '[Deleted Poster]',
+    status: 'Closed',
+    closedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  }))
+
+  await Promise.all(updates)
+}
+
 // Increment view count / POST
 export async function incrementViewCount(vexationId: string): Promise<void> {
   await updateDoc(doc(db, 'vexations', vexationId), {
@@ -317,36 +367,3 @@ export async function getClaimedVexations(userId: string): Promise<Vexation[]> {
   }
 }
 
-export async function closeVexation(
-  vexationId: string,
-  posterId: string,
-  posterName: string
-): Promise<void> {
-  const vexRef = doc(db, 'vexations', vexationId)
-  const vexSnap = await getDoc(vexRef)
-
-  if (!vexSnap.exists()) throw new Error('Vexation not found')
-  if (vexSnap.data()?.authorId !== posterId) throw new Error('Only the Poster can close this Vexation')
-
-  await updateDoc(vexRef, {
-    status: 'Closed',
-    closedAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
-  })
-
-  const vexData = vexSnap.data()
-  const claimedSolvers: string[] = vexData?.claimedByID ?? []
-
-  await Promise.all(
-    claimedSolvers.map((solverId) => 
-      logActivity({
-        ownerId: solverId,
-        actorId: posterId,
-        actorName: posterName,
-        type: 'CLOSE_VEXATION',
-        targetId: vexationId,
-        targetTitle: vexData?.title ?? 'Unknown Vexation'
-      })
-    )
-  )
-}
