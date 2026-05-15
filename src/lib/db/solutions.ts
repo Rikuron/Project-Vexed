@@ -18,7 +18,7 @@ import { logActivity } from './activities'
 
 const solutionsRef = collection(db, 'solutions')
 
-// Create a new solution
+// Create a new solution / POST
 export async function createSolution(
   solutionData: Omit<Solution, 'id' | 'dateSubmitted'>
 ): Promise<String> {
@@ -51,7 +51,7 @@ export async function createSolution(
   return docRef.id
 }
 
-// Get solution by ID
+// Get solution by ID / GET
 export async function getSolutionById(id: string): Promise<Solution | null> {
   const docSnap = await getDoc(doc(db, 'solutions', id))
 
@@ -60,7 +60,7 @@ export async function getSolutionById(id: string): Promise<Solution | null> {
   return { id: docSnap.id, ...docSnap.data() } as Solution
 }
 
-// Get solutions by Solver
+// Get solutions by Solver / GET
 export async function getSolutionsBySolver(solverId: string): Promise<Solution[]> {
   try {
     const q = query(
@@ -96,7 +96,7 @@ export async function getApprovedSolutionsBySolver(solverId: string): Promise<So
   }
 }
 
-// Fetch all solutions for a specific Vexation ID
+// Fetch all solutions for a specific Vexation ID / GET
 export async function getSolutionsForVexation(vexationId: string): Promise<Solution[]> {
   try {
     const q = query(
@@ -120,7 +120,7 @@ export async function getSolutionsForVexation(vexationId: string): Promise<Solut
   }
 }
 
-// Upvote
+// Upvote a solution / PUT
 export async function upvoteSolution(
   solutionId: string,
   userId: string
@@ -147,7 +147,7 @@ export async function upvoteSolution(
       upvotes: increment(1)
     })
 
-    // Log what solver did
+    // Log what user did
     await logActivity({
       ownerId: userId,
       actorId: userId,
@@ -176,7 +176,7 @@ export async function upvoteSolution(
   return true
 }
 
-// Check if user has upvoted solution
+// Check if user has upvoted solution / GET
 export async function hasUserUpvotedSolution(
   solutionId: string,
   userId: string
