@@ -48,11 +48,15 @@ export default function MobileHeader() {
           {settingsOpen && (
             <div className="absolute top-full right-0 mt-2 w-48 bg-[#1A1825] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
               <button
-                disabled
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
+                onClick={() => {
+                  setSettingsOpen(false)
+                  navigate({ to: '/settings' })
+                }}
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <UserCog size={14} /> User Settings
               </button>
+
               <div className="border-t border-white/5" />
               <button
                 onClick={async () => {

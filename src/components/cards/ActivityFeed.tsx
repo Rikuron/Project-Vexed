@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { formatTimeAgo } from '../../lib/utils/activity'
+import { formatTimeAgo } from '../../lib/utils/formatTimeAgo'
 import type { Activity } from '../../types'
 
 type GroupedActivity = Activity & {
@@ -102,7 +102,7 @@ export default function ActivityFeed({ activities }: { activities: Activity[] })
                     <span className="font-semibold">{item.targetTitle}</span>
                   </p>
                   <p className="text-xs text-slate-500">
-                    {item.createdAt ? formatTimeAgo(item.createdAt.toDate()) : 'Just now'}
+                    {item.createdAt ? formatTimeAgo(item.createdAt) : 'Just now'}
                   </p>
                 </div>
               </div>

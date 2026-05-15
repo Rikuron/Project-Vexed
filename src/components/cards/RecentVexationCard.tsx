@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowBigUp, MessageSquare } from 'lucide-react'
 import type { Vexation } from '../../types'
+import { formatTimeAgo } from '../../lib/utils/formatTimeAgo'
 
 // Badge colour based on AI-assigned category label
 const CATEGORY_STYLES: Record<string, string> = {
@@ -54,14 +55,4 @@ export default function RecentVexationCard({ vexation: vex }: { vexation: Vexati
       </div>
     </Link>
   )
-}
-
-function formatTimeAgo(timestamp: any): string {
-  if (!timestamp?.toDate) return ''
-  const diffMins = Math.floor((Date.now() - timestamp.toDate().getTime()) / 60_000)
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  const diffHours = Math.floor(diffMins / 60)
-  if (diffHours < 24) return `${diffHours}h ago`
-  return `${Math.floor(diffHours / 24)}d ago`
 }

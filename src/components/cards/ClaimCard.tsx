@@ -1,16 +1,10 @@
 import { ArrowRight } from 'lucide-react'
 import type { Vexation } from '../../types'
+import { formatTimeAgo } from '../../lib/utils/formatTimeAgo'
 
 interface ClaimCardProps {
   vexation: Vexation
   variant: 'claimed' | 'bookmarked'
-}
-
-function formatTimeAgo(timestamp: any): string {
-  if (!timestamp?.toDate) return 'Just now'
-  const diffHrs = Math.floor((Date.now() - timestamp.toDate().getTime()) / 3600000)
-  if (diffHrs < 24) return `Updated ${diffHrs}h ago`
-  return `Updated ${Math.floor(diffHrs / 24)}d ago`
 }
 
 export default function ClaimCard({ vexation, variant }: ClaimCardProps) {
@@ -25,7 +19,7 @@ export default function ClaimCard({ vexation, variant }: ClaimCardProps) {
           {isClaimed ? 'IN PROGRESS' : 'SAVED'}
         </div>
         <span className="text-[11px] font-medium text-slate-500">
-          {formatTimeAgo(vexation.updatedAt || vexation.createdAt)}
+          {`Updated ${formatTimeAgo(vexation.updatedAt || vexation.createdAt) || 'just now'}`}
         </span>
       </div>
 

@@ -8,6 +8,7 @@ export interface UserProfile {
   displayName: string | null
   photoURL: string | null
   role: UserRole
+  bio?: string
   createdAt: Timestamp
   updatedAt: Timestamp
 

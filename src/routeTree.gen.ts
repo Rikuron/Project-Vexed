@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SignInRouteImport } from './routes/signIn'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as BrowseRouteImport } from './routes/browse'
@@ -30,6 +31,11 @@ const SubmitRoute = SubmitRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/signIn',
   path: '/signIn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/browse': typeof BrowseRoute
   '/complete-profile': typeof CompleteProfileRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
   '/signIn': typeof SignInRoute
   '/submit': typeof SubmitRoute
   '/my/claimed': typeof MyClaimedRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/complete-profile'
     | '/portfolio'
+    | '/settings'
     | '/signIn'
     | '/submit'
     | '/my/claimed'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/complete-profile'
     | '/portfolio'
+    | '/settings'
     | '/signIn'
     | '/submit'
     | '/my/claimed'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/complete-profile'
     | '/portfolio'
+    | '/settings'
     | '/signIn'
     | '/submit'
     | '/my/claimed'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   BrowseRoute: typeof BrowseRoute
   CompleteProfileRoute: typeof CompleteProfileRoute
   PortfolioRoute: typeof PortfolioRoute
+  SettingsRoute: typeof SettingsRoute
   SignInRoute: typeof SignInRoute
   SubmitRoute: typeof SubmitRoute
   MyClaimedRoute: typeof MyClaimedRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/signIn'
       fullPath: '/signIn'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrowseRoute: BrowseRoute,
   CompleteProfileRoute: CompleteProfileRoute,
   PortfolioRoute: PortfolioRoute,
+  SettingsRoute: SettingsRoute,
   SignInRoute: SignInRoute,
   SubmitRoute: SubmitRoute,
   MyClaimedRoute: MyClaimedRoute,
