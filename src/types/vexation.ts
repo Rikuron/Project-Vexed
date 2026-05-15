@@ -63,15 +63,6 @@ export interface Vote {
   createdAt: Timestamp
 }
 
-export interface Comment {
-  id: string
-  vexationId: string
-  authorId: string
-  authorDisplayName: string
-  content: string
-  createdAt: Timestamp
-}
-
 export interface VexationFilters {
   sector?: Sector
   complexity?: Complexity

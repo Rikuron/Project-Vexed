@@ -17,4 +17,5 @@ export interface Solution {
   updatedAt?: Timestamp
   status?: 'pending' | 'approved' | 'rejected'
   approvedAt?: Timestamp
+  commentCount?: number
 }
