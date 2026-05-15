@@ -180,13 +180,13 @@ function VexationDetailPage() {
     setIsSubmitSolutionModalOpen(true)
   }
 
-  async function handleModalSubmit(solutionData: any) {
-    if (!user || !userProfile || !vexation) return
+  async function handleModalSubmit(solutionData: any): Promise<string> {
+    if (!user || !userProfile || !vexation) throw new Error('Missing auth context')
     setSolveLoading(true)
     
     try {
       // 1. Create the new Solution document
-      await createSolution({
+      const solutionId = await createSolution({
         ...solutionData,
         vexationId: vexation.id,
         solverId: user.uid,
@@ -207,6 +207,8 @@ function VexationDetailPage() {
       setSolutions(refreshedSols)
       
       setIsSubmitSolutionModalOpen(false)
+
+      return solutionId as string
     } catch (error: any) {
       console.error('Failed to save full solution:', error)
       alert(error.message || 'Failed to submit solution. Please try again.')
@@ -215,6 +217,7 @@ function VexationDetailPage() {
       setSolveLoading(false)
     }
   }
+
 
   async function handleEditSubmit(updates: Partial<Vexation>) {
     if (!user || !vexation) return
@@ -566,6 +569,7 @@ function VexationDetailPage() {
 
         <SubmitSolutionModal
           isOpen={isSubmitSolutionModalOpen}
+          userId={user?.uid ?? ''}
           onClose={() => setIsSubmitSolutionModalOpen(false)}
           onSubmit={handleModalSubmit}
         />

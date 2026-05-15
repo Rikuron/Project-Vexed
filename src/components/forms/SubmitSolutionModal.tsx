@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { X, Loader2, UploadCloud } from 'lucide-react'
 import type { Solution } from '../../types/solution'
 import { Timestamp } from 'firebase/firestore'
-import { uploadImages } from '../../lib/db/storage'
+import { uploadSolutionImages } from '../../lib/db/storage'
+import { updateSolution } from '../../lib/db'
 
 interface SubmitSolutionModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (data: Omit<Solution, 'id' | 'dateSubmitted' | 'vexationId' | 'solverId' | 'solverDisplayName'>) => Promise<void>
+  userId: string
+  onSubmit: (data: Omit<Solution, 'id' | 'dateSubmitted' | 'vexationId' | 'solverId' | 'solverDisplayName'>) => Promise<string>
 }
 
-export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: SubmitSolutionModalProps) {
+export default function SubmitSolutionModal({ isOpen, onClose, userId, onSubmit }: SubmitSolutionModalProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
@@ -29,14 +31,9 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
     setLoading(true)
     
     try {
-      // Upload images first
-      let uploadedImageUrls: string[] = []
-      if (imageFiles.length > 0) {
-        uploadedImageUrls = await uploadImages(imageFiles, 'solutions')
-      }
-
       const parsedDate = new Date(formData.dateStarted)
       
+      // 1. Create solution doc first (without images) to get the real ID
       const solutionData = {
         title: formData.title,
         description: formData.description,
@@ -44,10 +41,17 @@ export default function SubmitSolutionModal({ isOpen, onClose, onSubmit }: Submi
         liveUrl: formData.liveUrl,
         dateStarted: Timestamp.fromDate(parsedDate),
         techStack: formData.techStack.split(',').map(s => s.trim()).filter(Boolean),
-        images: uploadedImageUrls
+        images: [] as string[]
       }
       
-      await onSubmit(solutionData)
+      const solutionId = await onSubmit(solutionData)
+
+      // 2. Upload images under the real solution ID, then patch the doc
+      if (imageFiles.length > 0) {
+        const uploadedImageUrls = await uploadSolutionImages(imageFiles, solutionId)
+        await updateSolution(solutionId, userId, { images: uploadedImageUrls })
+      }
+
       onClose()
     } catch (err) {
       console.error(err)

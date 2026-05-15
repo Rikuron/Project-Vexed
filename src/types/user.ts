@@ -10,4 +10,13 @@ export interface UserProfile {
   role: UserRole
   createdAt: Timestamp
   updatedAt: Timestamp
+
+  // Poster-specific fields
+  industry?: string
+  company?: string
+
+  // Solver-specific fields
+  github?: string
+  website?: string
+  skills?: string[]
 }

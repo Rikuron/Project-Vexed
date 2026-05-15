@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Loader2, UploadCloud } from 'lucide-react'
 import type { Solution } from '../../types'
-import { uploadImages } from '../../lib/db/storage'
+import { uploadSolutionImages } from '../../lib/db/storage'
 
 interface EditSolutionModalProps {
   isOpen: boolean
@@ -31,7 +31,7 @@ export default function EditSolutionModal({ isOpen, onClose, solution, onSubmit 
     try {
       let uploadedImageUrls: string[] = []
       if (newImageFiles.length > 0) {
-        uploadedImageUrls = await uploadImages(newImageFiles, 'solutions')
+        uploadedImageUrls = await uploadSolutionImages(newImageFiles, solution.id)
       }
 
       const finalImages = [...existingImages, ...uploadedImageUrls]
