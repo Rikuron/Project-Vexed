@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useRef, useEffect } from 'react'
 import { Loader2, Camera, X, Plus, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../lib/auth/AuthContext'
-import { updateUserProfile, uploadAvatar } from '../lib/db'
+import { updateUserProfile, uploadAvatar, updateCommentAuthorInfo } from '../lib/db'
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
 import type { UserProfile } from '../types'
 import DeleteAccountModal from '../components/forms/DeleteAccountModal'
@@ -169,6 +169,9 @@ function SettingsPage() {
 
       // Refresh cached profile in AuthContext
       await refreshProfile()
+
+      // Fan-out: Update all comments by this user
+      await updateCommentAuthorInfo(user.uid, displayName.trim(), photoURL ?? null)
 
       setFeedback({ type: 'success', message: 'Profile updated successfully!' })
     } catch (err: any) {
@@ -544,7 +547,7 @@ function SettingsPage() {
           )}
         </div>
 
-        {/* ─── DANGER ZONE ─── */}
+        {/* DANGER ZONE */}
         <div className="bg-rose-600/5 border border-rose-500/20 rounded-2xl p-6 space-y-4 mt-6">
           <h2 className="text-sm font-bold text-rose-400 uppercase tracking-widest border-b border-rose-500/20 pb-2">
             Danger Zone

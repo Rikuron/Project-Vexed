@@ -1,7 +1,8 @@
 import {
   collection, doc, addDoc, getDoc, updateDoc,
   query, orderBy, onSnapshot, serverTimestamp,
-  increment, type Unsubscribe
+  increment, type Unsubscribe, collectionGroup,
+  where, getDocs, writeBatch
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import { logActivity } from './activities'
@@ -119,6 +120,30 @@ export async function editComment(
   })
 }
 
+export async function updateCommentAuthorInfo(
+  userId: string,
+  newDisplayName: string,
+  newPhotoURL: string | null
+): Promise<void> {
+  const commentsGroup = collectionGroup(db, 'comments')
+  const q = query(commentsGroup, where('authorId', '==', userId))
+  const snapshot = await getDocs(q)
+
+  if (snapshot.empty) return
+
+  // Batch update all comments by this user
+  const batch = writeBatch(db)
+  for (const docSnap of snapshot.docs) {
+    batch.update(docSnap.ref, {
+      authorDisplayName: newDisplayName,
+      authorPhotoURL: newPhotoURL
+    })
+  }
+  
+  await batch.commit()
+}
+
+// Delete comment recursively (including replies) / DELETE
 export async function deleteComment(
   parentType: ParentType,
   parentId: string,

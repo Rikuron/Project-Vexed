@@ -28,6 +28,7 @@ import AIInsightsCard from '../../components/cards/AIInsightCard'
 import DeveloperActionsBar from '../../components/cards/DeveloperActionsBar'
 import SubmitSolutionModal from '../../components/forms/SubmitSolutionModal'
 import EditVexationModal from '../../components/forms/EditVexationModal'
+import CommentSection from '../../components/comments/CommentSection'
 
 export const Route = createFileRoute('/vexation/$id')({
   component: VexationDetailPage,
@@ -539,6 +540,13 @@ function VexationDetailPage() {
                 ))}
               </div>
             )}
+
+            {/* Comments Section */}
+            <CommentSection
+              parentType="vexations"
+              parentId={vexation.id}
+              parentAuthorId={vexation.authorId}
+            />
           </div>
 
           {/* RIGHT COLUMN — AI Technical Insights (1/3 width) */}

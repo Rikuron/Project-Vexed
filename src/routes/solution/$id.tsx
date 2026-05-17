@@ -9,6 +9,7 @@ import {
   Target, ArrowBigUp, Pencil
 } from 'lucide-react'
 import EditSolutionModal from '../../components/forms/EditSolutionModal'
+import CommentSection from '../../components/comments/CommentSection'
 
 export const Route = createFileRoute('/solution/$id')({
   component: SolutionDetailPage,
@@ -257,6 +258,13 @@ function SolutionDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Comments Section */}
+      <CommentSection
+        parentType="solutions"
+        parentId={solution.id}
+        parentAuthorId={solution.solverId}
+      />
 
       {/* Edit Solution Modal */}
       {solution && (
